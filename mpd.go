@@ -1,3 +1,4 @@
+// Package mpd implements parsing and generating of MPEG-DASH Media Presentation Description (MPD) files.
 package mpd
 
 import (
