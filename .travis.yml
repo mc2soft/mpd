@@ -1,0 +1,8 @@
+language: go
+
+go:
+  - 1.4.2
+  - 1.5.0
+  - tip
+
+script: go test -v -check.v
