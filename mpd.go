@@ -12,17 +12,18 @@ import (
 
 // http://mpeg.chiariglione.org/standards/mpeg-dash
 // https://www.brendanlong.com/the-structure-of-an-mpeg-dash-mpd.html
+// http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd
 
 var emptyElementRE = regexp.MustCompile(`></[A-Za-z]+>`)
 
-// from XSD
-// Conditional Unsigned Integer (unsignedInt or boolean)
-type ConditionalUintType struct {
+// ConditionalUint (ConditionalUintType) defined in XSD as a union of unsignedInt and boolean.
+type ConditionalUint struct {
 	u *uint64
 	b *bool
 }
 
-func (c ConditionalUintType) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+// MarshalXMLAttr encodes ConditionalUint.
+func (c ConditionalUint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	if c.u != nil {
 		return xml.Attr{Name: name, Value: strconv.FormatUint(*c.u, 10)}, nil
 	}
@@ -35,7 +36,8 @@ func (c ConditionalUintType) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return xml.Attr{}, nil
 }
 
-func (c *ConditionalUintType) UnmarshalXMLAttr(attr xml.Attr) error {
+// UnmarshalXMLAttr decodes ConditionalUint.
+func (c *ConditionalUint) UnmarshalXMLAttr(attr xml.Attr) error {
 	u, err := strconv.ParseUint(attr.Value, 10, 64)
 	if err == nil {
 		c.u = &u
@@ -48,15 +50,16 @@ func (c *ConditionalUintType) UnmarshalXMLAttr(attr xml.Attr) error {
 		return nil
 	}
 
-	return fmt.Errorf("ConditionalUintType: can't UnmarshalXMLAttr %#v", attr)
+	return fmt.Errorf("ConditionalUint: can't UnmarshalXMLAttr %#v", attr)
 }
 
 // check interfaces
 var (
-	_ xml.MarshalerAttr   = ConditionalUintType{}
-	_ xml.UnmarshalerAttr = &ConditionalUintType{}
+	_ xml.MarshalerAttr   = ConditionalUint{}
+	_ xml.UnmarshalerAttr = &ConditionalUint{}
 )
 
+// MPD represents root XML element.
 type MPD struct {
 	XMLNS                      *string `xml:"xmlns,attr"`
 	Type                       *string `xml:"type,attr"`
@@ -73,6 +76,7 @@ type MPD struct {
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
 // https://github.com/golang/go/issues/6859#issuecomment-118890463
 
+// Encode generates MPD XML.
 func (m *MPD) Encode() ([]byte, error) {
 	x := new(bytes.Buffer)
 	e := xml.NewEncoder(x)
@@ -82,6 +86,7 @@ func (m *MPD) Encode() ([]byte, error) {
 		return nil, err
 	}
 
+	// hacks for self-closing tags
 	res := new(bytes.Buffer)
 	res.WriteString(`<?xml version="1.0" encoding="utf-8"?>`)
 	res.WriteByte('\n')
@@ -102,10 +107,12 @@ func (m *MPD) Encode() ([]byte, error) {
 	return res.Bytes(), err
 }
 
+// Decode parses MPD XML.
 func (m *MPD) Decode(b []byte) error {
 	return xml.Unmarshal(b, m)
 }
 
+// Period represents XSD's PeriodType.
 type Period struct {
 	Start          *string          `xml:"start,attr"`
 	ID             *string          `xml:"id,attr"`
@@ -113,34 +120,38 @@ type Period struct {
 	AdaptationSets []*AdaptationSet `xml:"AdaptationSet,omitempty"`
 }
 
+// AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
-	MimeType                string              `xml:"mimeType,attr"`
-	SegmentAlignment        ConditionalUintType `xml:"segmentAlignment,attr"`
-	SubsegmentAlignment     ConditionalUintType `xml:"subsegmentAlignment,attr"`
-	StartWithSAP            *uint64             `xml:"startWithSAP,attr"`
-	SubsegmentStartsWithSAP *uint64             `xml:"subsegmentStartsWithSAP,attr"`
-	BitstreamSwitching      *bool               `xml:"bitstreamSwitching,attr"`
-	Lang                    *string             `xml:"lang,attr"`
-	Representations         []Representation    `xml:"Representation,omitempty"`
+	MimeType                string           `xml:"mimeType,attr"`
+	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
+	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
+	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
+	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
+	BitstreamSwitching      *bool            `xml:"bitstreamSwitching,attr"`
+	Lang                    *string          `xml:"lang,attr"`
+	Representations         []Representation `xml:"Representation,omitempty"`
 }
 
+// Representation represents XSD's RepresentationType.
 type Representation struct {
-	ID                 *string             `xml:"id,attr"`
-	Width              *uint64             `xml:"width,attr"`
-	Height             *uint64             `xml:"height,attr"`
-	FrameRate          *string             `xml:"frameRate,attr"`
-	Bandwidth          *uint64             `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string             `xml:"audioSamplingRate,attr"`
-	Codecs             *string             `xml:"codecs,attr"`
-	ContentProtections []ContentProtection `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate    `xml:"SegmentTemplate,omitempty"`
+	ID                 *string          `xml:"id,attr"`
+	Width              *uint64          `xml:"width,attr"`
+	Height             *uint64          `xml:"height,attr"`
+	FrameRate          *string          `xml:"frameRate,attr"`
+	Bandwidth          *uint64          `xml:"bandwidth,attr"`
+	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
+	Codecs             *string          `xml:"codecs,attr"`
+	ContentProtections []Descriptor     `xml:"ContentProtection,omitempty"`
+	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 }
 
-type ContentProtection struct {
+// Descriptor represents XSD's DescriptorType.
+type Descriptor struct {
 	SchemeIDURI *string `xml:"schemeIdUri,attr"`
 	Value       *string `xml:"value,attr"`
 }
 
+// SegmentTemplate represents XSD's SegmentTemplateType.
 type SegmentTemplate struct {
 	Timescale              *uint64            `xml:"timescale,attr"`
 	Media                  *string            `xml:"media,attr"`
@@ -150,6 +161,7 @@ type SegmentTemplate struct {
 	SegmentTimelineS       []SegmentTimelineS `xml:"SegmentTimeline>S,omitempty"`
 }
 
+// SegmentTimelineS represents XSD's SegmentTimelineType's inner S elements.
 type SegmentTimelineS struct {
 	T *uint64 `xml:"t,attr"`
 	D uint64  `xml:"d,attr"`
