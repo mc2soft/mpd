@@ -48,3 +48,7 @@ func (s *MPDSuite) TestUnmarshalMarshalVod(c *C) {
 func (s *MPDSuite) TestUnmarshalMarshalLive(c *C) {
 	testUnmarshalMarshal(c, "fixture_elemental_delta_live.mpd")
 }
+
+func (s *MPDSuite) TestUnmarshalMarshalLiveDelta161(c *C) {
+	testUnmarshalMarshal(c, "fixture_elemental_delta_1.6.1_live.mpd")
+}
