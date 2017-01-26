@@ -69,6 +69,7 @@ type MPD struct {
 	MinBufferTime              *string `xml:"minBufferTime,attr"`
 	SuggestedPresentationDelay *string `xml:"suggestedPresentationDelay,attr"`
 	TimeShiftBufferDepth       *string `xml:"timeShiftBufferDepth,attr"`
+	PublishTime                *string `xml:"publishTime,attr"`
 	Profiles                   string  `xml:"profiles,attr"`
 	Period                     *Period `xml:"Period,omitempty"`
 }
