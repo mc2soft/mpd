@@ -61,17 +61,18 @@ var (
 
 // MPD represents root XML element.
 type MPD struct {
-	XMLNS                      *string `xml:"xmlns,attr"`
-	Type                       *string `xml:"type,attr"`
-	MinimumUpdatePeriod        *string `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string `xml:"minBufferTime,attr"`
-	SuggestedPresentationDelay *string `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string `xml:"timeShiftBufferDepth,attr"`
-	PublishTime                *string `xml:"publishTime,attr"`
-	Profiles                   string  `xml:"profiles,attr"`
-	Period                     *Period `xml:"Period,omitempty"`
+	XMLNS                      *string    `xml:"xmlns,attr"`
+	Type                       *string    `xml:"type,attr"`
+	MinimumUpdatePeriod        *string    `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string    `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string    `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string    `xml:"minBufferTime,attr"`
+	SuggestedPresentationDelay *string    `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string    `xml:"timeShiftBufferDepth,attr"`
+	PublishTime                *string    `xml:"publishTime,attr"`
+	Profiles                   string     `xml:"profiles,attr"`
+	BaseURL                    []*BaseURL `xml:"BaseURL,omitempty"`
+	Period                     *Period    `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -119,6 +120,16 @@ type Period struct {
 	ID             *string          `xml:"id,attr"`
 	Duration       *string          `xml:"duration,attr"`
 	AdaptationSets []*AdaptationSet `xml:"AdaptationSet,omitempty"`
+	BaseURL        []*BaseURL       `xml:"BaseURL,omitempty"`
+}
+
+// BaseURL represents XSD's BaseURLType.
+type BaseURL struct {
+	Value                    string  `xml:",chardata"`
+	ServiceLocation          *string `xml:"serviceLocation,attr"`
+	ByteRange                *string `xml:"byteRange,attr"`
+	AvailabilityTimeOffset   *uint64 `xml:"availabilityTimeOffset,attr"`
+	AvailabilityTimeComplete *bool   `xml:"availabilityTimeComplete,attr"`
 }
 
 // AdaptationSet represents XSD's AdaptationSetType.
@@ -130,6 +141,7 @@ type AdaptationSet struct {
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	BitstreamSwitching      *bool            `xml:"bitstreamSwitching,attr"`
 	Lang                    *string          `xml:"lang,attr"`
+	BaseURL                 []*BaseURL       `xml:"BaseURL,omitempty"`
 	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 }
@@ -145,6 +157,7 @@ type Representation struct {
 	Codecs             *string          `xml:"codecs,attr"`
 	ContentProtections []Descriptor     `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
+	BaseURL            []*BaseURL       `xml:"BaseURL,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
