@@ -15,7 +15,7 @@ type MPDSuite struct{}
 
 var _ = Suite(&MPDSuite{})
 
-func readFile(c *C, name string) (string, *MPD, string, string) {
+func readFile(c *C, name string) (*MPD, string, string) {
 	expected, err := ioutil.ReadFile(name)
 	c.Assert(err, IsNil)
 
@@ -29,35 +29,53 @@ func readFile(c *C, name string) (string, *MPD, string, string) {
 	err = ioutil.WriteFile(obtainedName, obtained, 0666)
 	c.Assert(err, IsNil)
 
-	return string(expected), mpd, string(obtained), obtainedName
+	os.Remove(obtainedName)
+
+	return mpd, string(expected), string(obtained)
 }
 
-func testUnmarshalMarshal(c *C, name string) {
-	expected, _, obtained, obtainedName := readFile(c, name)
+func checkLineByLine(c *C, obtained string, expected string) {
+	obtainedSlice := strings.Split(strings.TrimSpace(obtained), "\n")
+	expectedSlice := strings.Split(strings.TrimSpace(expected), "\n")
+	c.Assert(obtainedSlice, HasLen, len(expectedSlice))
 
-	// strip stupid XML rubbish
-	expectedS := string(expected)
-	expectedS = strings.Replace(expectedS, `xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" `, ``, 1)
-	expectedS = strings.Replace(expectedS, `xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd" `, ``, 1)
-
-	obtainedSlice := strings.Split(strings.TrimSpace(string(obtained)), "\n")
-	expectedSlice := strings.Split(strings.TrimSpace(expectedS), "\n")
-	c.Check(obtainedSlice, HasLen, len(expectedSlice))
 	for i := range obtainedSlice {
 		c.Check(obtainedSlice[i], Equals, expectedSlice[i], Commentf("line %d", i+1))
 	}
+}
 
-	os.Remove(obtainedName)
+func testUnmarshalMarshalElemental(c *C, name string) {
+	_, expected, obtained := readFile(c, name)
+
+	// strip stupid XML rubbish
+	expected = strings.Replace(expected, `xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" `, ``, 1)
+	expected = strings.Replace(expected, `xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd" `, ``, 1)
+
+	checkLineByLine(c, obtained, expected)
+}
+
+func testUnmarshalMarshalAkamai(c *C, name string) {
+	_, expected, obtained := readFile(c, name)
+
+	// strip stupid XML rubbish
+	expected = strings.Replace(expected, `xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" `, ``, 1)
+	expected = strings.Replace(expected, ` xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd"`, ``, 1)
+
+	checkLineByLine(c, obtained, expected)
 }
 
 func (s *MPDSuite) TestUnmarshalMarshalVod(c *C) {
-	testUnmarshalMarshal(c, "fixtures/elemental_delta_vod.mpd")
+	testUnmarshalMarshalElemental(c, "fixtures/elemental_delta_vod.mpd")
 }
 
 func (s *MPDSuite) TestUnmarshalMarshalLive(c *C) {
-	testUnmarshalMarshal(c, "fixtures/elemental_delta_live.mpd")
+	testUnmarshalMarshalElemental(c, "fixtures/elemental_delta_live.mpd")
 }
 
 func (s *MPDSuite) TestUnmarshalMarshalLiveDelta161(c *C) {
-	testUnmarshalMarshal(c, "fixtures/elemental_delta_1.6.1_live.mpd")
+	testUnmarshalMarshalElemental(c, "fixtures/elemental_delta_1.6.1_live.mpd")
+}
+
+func (s *MPDSuite) TestUnmarshalMarshalSegmentTemplate(c *C) {
+	testUnmarshalMarshalAkamai(c, "fixtures/akamai_bbb_30fps.mpd")
 }

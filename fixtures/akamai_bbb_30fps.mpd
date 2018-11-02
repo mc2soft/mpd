@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" type="static" mediaPresentationDuration="PT634.566S" minBufferTime="PT2.00S" profiles="urn:hbbtv:dash:profile:isoff-live:2012,urn:mpeg:dash:profile:isoff-live:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd">
+  <BaseURL>./</BaseURL>
+  <Period>
+    <AdaptationSet mimeType="video/mp4" contentType="video" subsegmentAlignment="true" subsegmentStartsWithSAP="1" par="16:9">
+      <SegmentTemplate duration="120" timescale="30" media="$RepresentationID$/$RepresentationID$_$Number$.m4v" initialization="$RepresentationID$/$RepresentationID$_0.m4v" startNumber="1"/>
+      <Representation id="bbb_30fps_1024x576_2500k" width="1024" height="576" frameRate="30" bandwidth="3134488" codecs="avc1.64001f" sar="1:1" scanType="progressive"/>
+      <Representation id="bbb_30fps_1280x720_4000k" width="1280" height="720" frameRate="30" bandwidth="4952892" codecs="avc1.64001f" sar="1:1" scanType="progressive"/>
+      <Representation id="bbb_30fps_1920x1080_8000k" width="1920" height="1080" frameRate="30" bandwidth="9914554" codecs="avc1.640028" sar="1:1" scanType="progressive"/>
+    </AdaptationSet>
+    <AdaptationSet mimeType="audio/mp4" contentType="audio" subsegmentAlignment="true" subsegmentStartsWithSAP="1">
+      <SegmentTemplate duration="192512" timescale="48000" media="$RepresentationID$/$RepresentationID$_$Number$.m4a" initialization="$RepresentationID$/$RepresentationID$_0.m4a" startNumber="1"/>
+      <Representation id="bbb_a64k" bandwidth="67071" audioSamplingRate="48000" codecs="mp4a.40.5"/>
+    </AdaptationSet>
+  </Period>
+</MPD>
