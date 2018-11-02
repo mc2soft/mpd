@@ -2,6 +2,7 @@ package mpd
 
 import (
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -14,7 +15,7 @@ type MPDSuite struct{}
 
 var _ = Suite(&MPDSuite{})
 
-func testUnmarshalMarshal(c *C, name string) {
+func readFile(c *C, name string) (string, *MPD, string, string) {
 	expected, err := ioutil.ReadFile(name)
 	c.Assert(err, IsNil)
 
@@ -28,7 +29,13 @@ func testUnmarshalMarshal(c *C, name string) {
 	err = ioutil.WriteFile(obtainedName, obtained, 0666)
 	c.Assert(err, IsNil)
 
-	// strip stupid XML rubish
+	return string(expected), mpd, string(obtained), obtainedName
+}
+
+func testUnmarshalMarshal(c *C, name string) {
+	expected, _, obtained, obtainedName := readFile(c, name)
+
+	// strip stupid XML rubbish
 	expectedS := string(expected)
 	expectedS = strings.Replace(expectedS, `xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" `, ``, 1)
 	expectedS = strings.Replace(expectedS, `xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd" `, ``, 1)
