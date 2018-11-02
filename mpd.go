@@ -135,13 +135,16 @@ type BaseURL struct {
 // AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
 	MimeType                string           `xml:"mimeType,attr"`
+	ContentType             *string          `xml:"contentType,attr"`
 	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	BitstreamSwitching      *bool            `xml:"bitstreamSwitching,attr"`
 	Lang                    *string          `xml:"lang,attr"`
+	Par                     *string          `xml:"par,attr"`
 	BaseURL                 []*BaseURL       `xml:"BaseURL,omitempty"`
+	SegmentTemplate         *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 }
@@ -155,6 +158,8 @@ type Representation struct {
 	Bandwidth          *uint64          `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
 	Codecs             *string          `xml:"codecs,attr"`
+	SAR                *string          `xml:"sar,attr"`
+	ScanType           *string          `xml:"scanType,attr"`
 	ContentProtections []Descriptor     `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 	BaseURL            []*BaseURL       `xml:"BaseURL,omitempty"`
@@ -168,12 +173,17 @@ type Descriptor struct {
 
 // SegmentTemplate represents XSD's SegmentTemplateType.
 type SegmentTemplate struct {
-	Timescale              *uint64            `xml:"timescale,attr"`
-	Media                  *string            `xml:"media,attr"`
-	Initialization         *string            `xml:"initialization,attr"`
-	StartNumber            *uint64            `xml:"startNumber,attr"`
-	PresentationTimeOffset *uint64            `xml:"presentationTimeOffset,attr"`
-	SegmentTimelineS       []SegmentTimelineS `xml:"SegmentTimeline>S,omitempty"`
+	Duration               *uint64          `xml:"duration,attr"`
+	Timescale              *uint64          `xml:"timescale,attr"`
+	Media                  *string          `xml:"media,attr"`
+	Initialization         *string          `xml:"initialization,attr"`
+	StartNumber            *uint64          `xml:"startNumber,attr"`
+	PresentationTimeOffset *uint64          `xml:"presentationTimeOffset,attr"`
+	SegmentTimeline        *SegmentTimeline `xml:"SegmentTimeline,omitempty"`
+}
+
+type SegmentTimeline struct {
+	S []*SegmentTimelineS `xml:"S"`
 }
 
 // SegmentTimelineS represents XSD's SegmentTimelineType's inner S elements.
