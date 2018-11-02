@@ -46,6 +46,8 @@ func testUnmarshalMarshal(c *C, name string) {
 	for i := range obtainedSlice {
 		c.Check(obtainedSlice[i], Equals, expectedSlice[i], Commentf("line %d", i+1))
 	}
+
+	os.Remove(obtainedName)
 }
 
 func (s *MPDSuite) TestUnmarshalMarshalVod(c *C) {
