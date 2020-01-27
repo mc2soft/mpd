@@ -132,6 +132,7 @@ type AdaptationSet struct {
 	Lang                    *string          `xml:"lang,attr"`
 	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
+	Codecs                  *string          `xml:"codecs,attr"`
 }
 
 // Representation represents XSD's RepresentationType.
