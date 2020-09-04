@@ -150,9 +150,11 @@ type Representation struct {
 
 // Descriptor represents XSD's DescriptorType.
 type Descriptor struct {
-	SchemeIDURI *string `xml:"schemeIdUri,attr"`
-	Value       *string `xml:"value,attr"`
-	CencPssh    *CencPssh
+	SchemeIDURI    *string `xml:"schemeIdUri,attr"`
+	Value          *string `xml:"value,attr,omitempty"`
+	CencDefaultKID *string `xml:"cenc:default_KID,attr,omitempty"`
+	XmlnsCenc      *string `xml:"xmlns:cenc,attr,omitempty"`
+	CencPssh       *CencPssh
 }
 
 // CencPssh represents XSD's CencPsshType .
