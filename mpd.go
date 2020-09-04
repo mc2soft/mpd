@@ -152,6 +152,13 @@ type Representation struct {
 type Descriptor struct {
 	SchemeIDURI *string `xml:"schemeIdUri,attr"`
 	Value       *string `xml:"value,attr"`
+	CencPssh    *CencPssh
+}
+
+// CencPssh represents XSD's CencPsshType .
+type CencPssh struct {
+	XmlnsCenc *string `xml:"xmlns:cenc=,attr"`
+	Value     *string `xml:cenc:pssh,omitempty`
 }
 
 // SegmentTemplate represents XSD's SegmentTemplateType.
