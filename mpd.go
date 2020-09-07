@@ -8,6 +8,8 @@ import (
 	"io"
 	"regexp"
 	"strconv"
+
+	"github.com/mc2soft/mpd/utils"
 )
 
 // http://mpeg.chiariglione.org/standards/mpeg-dash
@@ -96,7 +98,7 @@ type mpdMarshal struct {
 	TimeShiftBufferDepth       *string        `xml:"timeShiftBufferDepth,attr"`
 	Profiles                   string         `xml:"profiles,attr"`
 	SCTE35                     *string        `xml:"xmlns:scte35,attr,omitempty"`
-	Period                     *PeriodMarshal `xml:"Period,omitempty"`
+	Period                     *periodMarshal `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -108,7 +110,7 @@ func (m *MPD) Encode() ([]byte, error) {
 	e := xml.NewEncoder(x)
 	e.Indent("", "  ")
 
-	xml := modifyXMLStuct(m)
+	xml := modifyMPD(m)
 
 	err := e.Encode(xml)
 	if err != nil {
@@ -150,7 +152,7 @@ type Period struct {
 }
 
 // Period represents XSD's PeriodType.
-type PeriodMarshal struct {
+type periodMarshal struct {
 	Start          *string                 `xml:"start,attr"`
 	ID             *string                 `xml:"id,attr"`
 	Duration       *string                 `xml:"duration,attr"`
@@ -219,7 +221,6 @@ type Descriptor struct {
 }
 
 type descriptorMarshal struct {
-	XMLName        xml.Name     `xml:"ContentProtection"`
 	SchemeIDURI    *string      `xml:"schemeIdUri,attr"`
 	Value          *string      `xml:"value,attr,omitempty"`
 	CencDefaultKID *string      `xml:"cenc:default_KID,attr,omitempty"`
@@ -255,116 +256,125 @@ type SegmentTimelineS struct {
 	R *int64  `xml:"r,attr"`
 }
 
-// modifyXMLStuct generates true MPD .
-func modifyXMLStuct(mpd *MPD) *mpdMarshal {
-	mpdMarshal := new(mpdMarshal)
+// modifyMPD generates true xml struct for MPD .
+func modifyMPD(mpd *MPD) *mpdMarshal {
+	return &mpdMarshal{
+		XMLNS:                      utils.String(mpd.XMLNS),
+		MinimumUpdatePeriod:        utils.String(mpd.MinimumUpdatePeriod),
+		AvailabilityStartTime:      utils.String(mpd.AvailabilityStartTime),
+		MediaPresentationDuration:  utils.String(mpd.MediaPresentationDuration),
+		MinBufferTime:              utils.String(mpd.MinBufferTime),
+		SuggestedPresentationDelay: utils.String(mpd.SuggestedPresentationDelay),
+		TimeShiftBufferDepth:       utils.String(mpd.TimeShiftBufferDepth),
+		PublishTime:                utils.String(mpd.PublishTime),
+		Type:                       utils.String(mpd.Type),
+		Profiles:                   mpd.Profiles,
+		XSI:                        utils.String(mpd.XSI),
+		SCTE35:                     utils.String(mpd.SCTE35),
+		XSISchemaLocation:          utils.String(mpd.XSISchemaLocation),
+		ID:                         utils.String(mpd.ID),
+		Period:                     modifyPeriod(mpd.Period),
+	}
+}
 
-	// MPD
-	if mpd.XMLNS != nil {
-		mpdMarshal.XMLNS = mpd.XMLNS
+func modifyPeriod(p *Period) *periodMarshal {
+	if p == nil {
+		return nil
 	}
-	if mpd.MinimumUpdatePeriod != nil {
-		mpdMarshal.MinimumUpdatePeriod = mpd.MinimumUpdatePeriod
+	return &periodMarshal{
+		Duration:       utils.String(p.Duration),
+		ID:             utils.String(p.ID),
+		Start:          utils.String(p.Start),
+		AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
 	}
-	if mpd.AvailabilityStartTime != nil {
-		mpdMarshal.AvailabilityStartTime = mpd.AvailabilityStartTime
-	}
-	if mpd.MediaPresentationDuration != nil {
-		mpdMarshal.MediaPresentationDuration = mpd.MediaPresentationDuration
-	}
-	if mpd.MinBufferTime != nil {
-		mpdMarshal.MinBufferTime = mpd.MinBufferTime
-	}
-	if mpd.SuggestedPresentationDelay != nil {
-		mpdMarshal.SuggestedPresentationDelay = mpd.SuggestedPresentationDelay
-	}
-	if mpd.TimeShiftBufferDepth != nil {
-		mpdMarshal.TimeShiftBufferDepth = mpd.TimeShiftBufferDepth
-	}
-	if mpd.PublishTime != nil {
-		mpdMarshal.PublishTime = mpd.PublishTime
-	}
-	if mpd.Type != nil {
-		mpdMarshal.Type = mpd.Type
-	}
-	mpdMarshal.Profiles = mpd.Profiles
-	if mpd.XSI != nil {
-		mpdMarshal.XSI = mpd.XSI
-	}
-	if mpd.SCTE35 != nil {
-		mpdMarshal.SCTE35 = mpd.SCTE35
-	}
-	if mpd.XSISchemaLocation != nil {
-		mpdMarshal.XSISchemaLocation = mpd.XSISchemaLocation
-	}
-	if mpd.ID != nil {
-		mpdMarshal.ID = mpd.ID
-	}
+}
 
-	// Period
-	mpdMarshal.Period = &PeriodMarshal{}
-	if mpd.Period != nil {
-		if mpd.Period.Duration != nil {
-			mpdMarshal.Period.Duration = mpd.Period.Duration
+func modifyAdaptationSets(as []*AdaptationSet) (asm []*adaptationSetMarshal) {
+	if as == nil {
+		return nil
+	}
+	for _, a := range as {
+		adaptationSet := &adaptationSetMarshal{
+			BitstreamSwitching:      utils.Bool(a.BitstreamSwitching),
+			Codecs:                  utils.String(a.Codecs),
+			Lang:                    utils.String(a.Lang),
+			MimeType:                a.MimeType,
+			SegmentAlignment:        a.SegmentAlignment,
+			StartWithSAP:            utils.UInt64(a.StartWithSAP),
+			SubsegmentAlignment:     a.SubsegmentAlignment,
+			SubsegmentStartsWithSAP: utils.UInt64(a.SubsegmentStartsWithSAP),
+			Representations:         modifyRepresentations(a.Representations),
 		}
-		if mpd.Period.ID != nil {
-			mpdMarshal.Period.ID = mpd.Period.ID
-		}
-		if mpd.Period.Start != nil {
-			mpdMarshal.Period.Start = mpd.Period.Start
-		}
-
-		if mpd.Period.AdaptationSets != nil {
-			// AdaptationSets
-			for _, as := range mpd.Period.AdaptationSets {
-				adaptationSet := &adaptationSetMarshal{}
-				adaptationSet.BitstreamSwitching = as.BitstreamSwitching
-				adaptationSet.Codecs = as.Codecs
-				adaptationSet.Lang = as.Lang
-				adaptationSet.MimeType = as.MimeType
-				adaptationSet.SegmentAlignment = as.SegmentAlignment
-				adaptationSet.StartWithSAP = as.StartWithSAP
-				adaptationSet.SubsegmentAlignment = as.SubsegmentAlignment
-				adaptationSet.SubsegmentStartsWithSAP = as.SubsegmentStartsWithSAP
-
-				if as.Representations != nil {
-					// Representations
-					for _, r := range as.Representations {
-						representation := representationMarshal{}
-						representation.AudioSamplingRate = r.AudioSamplingRate
-						representation.Bandwidth = r.Bandwidth
-						representation.Codecs = r.Codecs
-						representation.FrameRate = r.FrameRate
-						representation.Height = r.Height
-						representation.ID = r.ID
-						representation.Width = r.Width
-						representation.SegmentTemplate = r.SegmentTemplate
-						representation.SAR = r.SAR
-
-						if r.ContentProtections != nil {
-							// ContentProtections
-							for _, cp := range r.ContentProtections {
-								descriptorMarshal := descriptorMarshal{}
-								descriptorMarshal.CencDefaultKID = cp.CencDefaultKID
-								descriptorMarshal.SchemeIDURI = cp.SchemeIDURI
-								descriptorMarshal.Value = cp.Value
-								descriptorMarshal.Cenc = cp.Cenc
-								if cp.Pssh != nil {
-									pssh := &psshMarshal{}
-									pssh.Cenc = cp.Pssh.Cenc
-									pssh.Value = cp.Pssh.Value
-									descriptorMarshal.Pssh = pssh
-								}
-								representation.ContentProtections = append(representation.ContentProtections, descriptorMarshal)
-							}
-						}
-						adaptationSet.Representations = append(adaptationSet.Representations, representation)
-					}
-				}
-				mpdMarshal.Period.AdaptationSets = append(mpdMarshal.Period.AdaptationSets, adaptationSet)
-			}
-		}
+		asm = append(asm, adaptationSet)
 	}
+	return asm
+}
 
-	return mpdMarshal
+func modifyRepresentations(rs []Representation) (rsm []representationMarshal) {
+	for _, r := range rs {
+		representation := representationMarshal{
+			AudioSamplingRate:  utils.String(r.AudioSamplingRate),
+			Bandwidth:          utils.UInt64(r.Bandwidth),
+			Codecs:             utils.String(r.Codecs),
+			FrameRate:          utils.String(r.FrameRate),
+			Height:             utils.UInt64(r.Height),
+			ID:                 utils.String(r.ID),
+			Width:              utils.UInt64(r.Width),
+			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
+			SAR:                utils.String(r.SAR),
+			ContentProtections: modifyContentProtections(r.ContentProtections),
+		}
+		rsm = append(rsm, representation)
+	}
+	return rsm
+}
+
+func copySegmentTemplate(st *SegmentTemplate) *SegmentTemplate {
+	if st == nil {
+		return nil
+	}
+	return &SegmentTemplate{
+		Timescale:              utils.UInt64(st.Timescale),
+		Media:                  utils.String(st.Media),
+		Initialization:         utils.String(st.Initialization),
+		StartNumber:            utils.UInt64(st.StartNumber),
+		PresentationTimeOffset: utils.UInt64(st.PresentationTimeOffset),
+		SegmentTimelineS:       copySegmentTimelineS(st.SegmentTimelineS),
+	}
+}
+
+func copySegmentTimelineS(st []SegmentTimelineS) (stm []SegmentTimelineS) {
+	for _, s := range st {
+		segmentTimelineS := SegmentTimelineS{
+			T: s.T,
+			D: s.D,
+			R: utils.Int64(s.R),
+		}
+		stm = append(stm, segmentTimelineS)
+	}
+	return stm
+}
+
+func modifyContentProtections(ds []Descriptor) (dsm []descriptorMarshal) {
+	for _, d := range ds {
+		descriptor := descriptorMarshal{
+			CencDefaultKID: utils.String(d.CencDefaultKID),
+			SchemeIDURI:    utils.String(d.SchemeIDURI),
+			Value:          utils.String(d.Value),
+			Cenc:           utils.String(d.Cenc),
+			Pssh:           modifyPssh(d.Pssh),
+		}
+		dsm = append(dsm, descriptor)
+	}
+	return dsm
+}
+
+func modifyPssh(p *Pssh) *psshMarshal {
+	if p == nil {
+		return nil
+	}
+	return &psshMarshal{
+		Cenc:  utils.String(p.Cenc),
+		Value: utils.String(p.Value),
+	}
 }
