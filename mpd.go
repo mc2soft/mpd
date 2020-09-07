@@ -255,7 +255,7 @@ type SegmentTimelineS struct {
 	R *int64  `xml:"r,attr"`
 }
 
-// Encode generates MPD XML.
+// modifyXMLStuct generates true MPD .
 func modifyXMLStuct(mpd *MPD) *mpdMarshal {
 	mpdMarshal := new(mpdMarshal)
 
