@@ -228,7 +228,7 @@ type descriptorMarshal struct {
 	Pssh           *psshMarshal `xml:"cenc:pssh"`
 }
 
-// CencPssh represents XSD's CencPsshType .
+// Pssh represents XSD's CencPsshType .
 type Pssh struct {
 	Cenc  *string `xml:"cenc,attr"`
 	Value *string `xml:",chardata"`
@@ -289,10 +289,11 @@ func modifyPeriod(p *Period) *periodMarshal {
 	}
 }
 
-func modifyAdaptationSets(as []*AdaptationSet) (asm []*adaptationSetMarshal) {
+func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 	if as == nil {
 		return nil
 	}
+	asm := make([]*adaptationSetMarshal, 0, len(as))
 	for _, a := range as {
 		adaptationSet := &adaptationSetMarshal{
 			BitstreamSwitching:      utils.Bool(a.BitstreamSwitching),
@@ -310,7 +311,8 @@ func modifyAdaptationSets(as []*AdaptationSet) (asm []*adaptationSetMarshal) {
 	return asm
 }
 
-func modifyRepresentations(rs []Representation) (rsm []representationMarshal) {
+func modifyRepresentations(rs []Representation) []representationMarshal {
+	rsm := make([]representationMarshal, 0, len(rs))
 	for _, r := range rs {
 		representation := representationMarshal{
 			AudioSamplingRate:  utils.String(r.AudioSamplingRate),
@@ -343,7 +345,8 @@ func copySegmentTemplate(st *SegmentTemplate) *SegmentTemplate {
 	}
 }
 
-func copySegmentTimelineS(st []SegmentTimelineS) (stm []SegmentTimelineS) {
+func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
+	stm := make([]SegmentTimelineS, 0, len(st))
 	for _, s := range st {
 		segmentTimelineS := SegmentTimelineS{
 			T: s.T,
@@ -355,7 +358,8 @@ func copySegmentTimelineS(st []SegmentTimelineS) (stm []SegmentTimelineS) {
 	return stm
 }
 
-func modifyContentProtections(ds []Descriptor) (dsm []descriptorMarshal) {
+func modifyContentProtections(ds []Descriptor) []descriptorMarshal {
+	dsm := make([]descriptorMarshal, 0, len(ds))
 	for _, d := range ds {
 		descriptor := descriptorMarshal{
 			CencDefaultKID: utils.String(d.CencDefaultKID),
