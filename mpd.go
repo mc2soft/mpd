@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/mc2soft/mpd/utils"
+	copyobj "github.com/mc2soft/mpd/utils"
 )
 
 // http://mpeg.chiariglione.org/standards/mpeg-dash
@@ -259,20 +259,20 @@ type SegmentTimelineS struct {
 // modifyMPD generates true xml struct for MPD .
 func modifyMPD(mpd *MPD) *mpdMarshal {
 	return &mpdMarshal{
-		XMLNS:                      utils.String(mpd.XMLNS),
-		MinimumUpdatePeriod:        utils.String(mpd.MinimumUpdatePeriod),
-		AvailabilityStartTime:      utils.String(mpd.AvailabilityStartTime),
-		MediaPresentationDuration:  utils.String(mpd.MediaPresentationDuration),
-		MinBufferTime:              utils.String(mpd.MinBufferTime),
-		SuggestedPresentationDelay: utils.String(mpd.SuggestedPresentationDelay),
-		TimeShiftBufferDepth:       utils.String(mpd.TimeShiftBufferDepth),
-		PublishTime:                utils.String(mpd.PublishTime),
-		Type:                       utils.String(mpd.Type),
+		XMLNS:                      copyobj.String(mpd.XMLNS),
+		MinimumUpdatePeriod:        copyobj.String(mpd.MinimumUpdatePeriod),
+		AvailabilityStartTime:      copyobj.String(mpd.AvailabilityStartTime),
+		MediaPresentationDuration:  copyobj.String(mpd.MediaPresentationDuration),
+		MinBufferTime:              copyobj.String(mpd.MinBufferTime),
+		SuggestedPresentationDelay: copyobj.String(mpd.SuggestedPresentationDelay),
+		TimeShiftBufferDepth:       copyobj.String(mpd.TimeShiftBufferDepth),
+		PublishTime:                copyobj.String(mpd.PublishTime),
+		Type:                       copyobj.String(mpd.Type),
 		Profiles:                   mpd.Profiles,
-		XSI:                        utils.String(mpd.XSI),
-		SCTE35:                     utils.String(mpd.SCTE35),
-		XSISchemaLocation:          utils.String(mpd.XSISchemaLocation),
-		ID:                         utils.String(mpd.ID),
+		XSI:                        copyobj.String(mpd.XSI),
+		SCTE35:                     copyobj.String(mpd.SCTE35),
+		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
+		ID:                         copyobj.String(mpd.ID),
 		Period:                     modifyPeriod(mpd.Period),
 	}
 }
@@ -282,9 +282,9 @@ func modifyPeriod(p *Period) *periodMarshal {
 		return nil
 	}
 	return &periodMarshal{
-		Duration:       utils.String(p.Duration),
-		ID:             utils.String(p.ID),
-		Start:          utils.String(p.Start),
+		Duration:       copyobj.String(p.Duration),
+		ID:             copyobj.String(p.ID),
+		Start:          copyobj.String(p.Start),
 		AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
 	}
 }
@@ -296,14 +296,14 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 	asm := make([]*adaptationSetMarshal, 0, len(as))
 	for _, a := range as {
 		adaptationSet := &adaptationSetMarshal{
-			BitstreamSwitching:      utils.Bool(a.BitstreamSwitching),
-			Codecs:                  utils.String(a.Codecs),
-			Lang:                    utils.String(a.Lang),
+			BitstreamSwitching:      copyobj.Bool(a.BitstreamSwitching),
+			Codecs:                  copyobj.String(a.Codecs),
+			Lang:                    copyobj.String(a.Lang),
 			MimeType:                a.MimeType,
 			SegmentAlignment:        a.SegmentAlignment,
-			StartWithSAP:            utils.UInt64(a.StartWithSAP),
+			StartWithSAP:            copyobj.UInt64(a.StartWithSAP),
 			SubsegmentAlignment:     a.SubsegmentAlignment,
-			SubsegmentStartsWithSAP: utils.UInt64(a.SubsegmentStartsWithSAP),
+			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
 			Representations:         modifyRepresentations(a.Representations),
 		}
 		asm = append(asm, adaptationSet)
@@ -315,15 +315,15 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 	rsm := make([]representationMarshal, 0, len(rs))
 	for _, r := range rs {
 		representation := representationMarshal{
-			AudioSamplingRate:  utils.String(r.AudioSamplingRate),
-			Bandwidth:          utils.UInt64(r.Bandwidth),
-			Codecs:             utils.String(r.Codecs),
-			FrameRate:          utils.String(r.FrameRate),
-			Height:             utils.UInt64(r.Height),
-			ID:                 utils.String(r.ID),
-			Width:              utils.UInt64(r.Width),
+			AudioSamplingRate:  copyobj.String(r.AudioSamplingRate),
+			Bandwidth:          copyobj.UInt64(r.Bandwidth),
+			Codecs:             copyobj.String(r.Codecs),
+			FrameRate:          copyobj.String(r.FrameRate),
+			Height:             copyobj.UInt64(r.Height),
+			ID:                 copyobj.String(r.ID),
+			Width:              copyobj.UInt64(r.Width),
 			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
-			SAR:                utils.String(r.SAR),
+			SAR:                copyobj.String(r.SAR),
 			ContentProtections: modifyContentProtections(r.ContentProtections),
 		}
 		rsm = append(rsm, representation)
@@ -336,11 +336,11 @@ func copySegmentTemplate(st *SegmentTemplate) *SegmentTemplate {
 		return nil
 	}
 	return &SegmentTemplate{
-		Timescale:              utils.UInt64(st.Timescale),
-		Media:                  utils.String(st.Media),
-		Initialization:         utils.String(st.Initialization),
-		StartNumber:            utils.UInt64(st.StartNumber),
-		PresentationTimeOffset: utils.UInt64(st.PresentationTimeOffset),
+		Timescale:              copyobj.UInt64(st.Timescale),
+		Media:                  copyobj.String(st.Media),
+		Initialization:         copyobj.String(st.Initialization),
+		StartNumber:            copyobj.UInt64(st.StartNumber),
+		PresentationTimeOffset: copyobj.UInt64(st.PresentationTimeOffset),
 		SegmentTimelineS:       copySegmentTimelineS(st.SegmentTimelineS),
 	}
 }
@@ -351,7 +351,7 @@ func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
 		segmentTimelineS := SegmentTimelineS{
 			T: s.T,
 			D: s.D,
-			R: utils.Int64(s.R),
+			R: copyobj.Int64(s.R),
 		}
 		stm = append(stm, segmentTimelineS)
 	}
@@ -362,10 +362,10 @@ func modifyContentProtections(ds []Descriptor) []descriptorMarshal {
 	dsm := make([]descriptorMarshal, 0, len(ds))
 	for _, d := range ds {
 		descriptor := descriptorMarshal{
-			CencDefaultKID: utils.String(d.CencDefaultKID),
-			SchemeIDURI:    utils.String(d.SchemeIDURI),
-			Value:          utils.String(d.Value),
-			Cenc:           utils.String(d.Cenc),
+			CencDefaultKID: copyobj.String(d.CencDefaultKID),
+			SchemeIDURI:    copyobj.String(d.SchemeIDURI),
+			Value:          copyobj.String(d.Value),
+			Cenc:           copyobj.String(d.Cenc),
 			Pssh:           modifyPssh(d.Pssh),
 		}
 		dsm = append(dsm, descriptor)
@@ -378,7 +378,7 @@ func modifyPssh(p *Pssh) *psshMarshal {
 		return nil
 	}
 	return &psshMarshal{
-		Cenc:  utils.String(p.Cenc),
-		Value: utils.String(p.Value),
+		Cenc:  copyobj.String(p.Cenc),
+		Value: copyobj.String(p.Value),
 	}
 }

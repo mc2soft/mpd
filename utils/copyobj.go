@@ -1,4 +1,4 @@
-package utils
+package copyobj
 
 func String(s *string) *string {
 	if s == nil {
