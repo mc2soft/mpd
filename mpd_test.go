@@ -91,7 +91,7 @@ func TestAdaptationSetEqual(t *testing.T) {
 func TestRepresentationEqual(t *testing.T) {
 	a := &Representation{}
 	b := &representationMarshal{}
-	require.Equal(t, 11, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 12, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyRepresentations")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"Representation element count not equal Representation")
