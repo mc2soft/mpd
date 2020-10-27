@@ -70,6 +70,7 @@ type MPD struct {
 	AvailabilityStartTime      *string  `xml:"availabilityStartTime,attr"`
 	MediaPresentationDuration  *string  `xml:"mediaPresentationDuration,attr"`
 	MinBufferTime              *string  `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string  `xml:"maxSegmentDuration,attr,omitempty"`
 	SuggestedPresentationDelay *string  `xml:"suggestedPresentationDelay,attr"`
 	TimeShiftBufferDepth       *string  `xml:"timeShiftBufferDepth,attr"`
 	PublishTime                *string  `xml:"publishTime,attr"`
@@ -94,6 +95,7 @@ type mpdMarshal struct {
 	AvailabilityStartTime      *string         `xml:"availabilityStartTime,attr"`
 	MediaPresentationDuration  *string         `xml:"mediaPresentationDuration,attr"`
 	MinBufferTime              *string         `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string         `xml:"maxSegmentDuration,attr,omitempty"`
 	SuggestedPresentationDelay *string         `xml:"suggestedPresentationDelay,attr"`
 	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
 	Profiles                   string          `xml:"profiles,attr"`
@@ -268,6 +270,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		AvailabilityStartTime:      copyobj.String(mpd.AvailabilityStartTime),
 		MediaPresentationDuration:  copyobj.String(mpd.MediaPresentationDuration),
 		MinBufferTime:              copyobj.String(mpd.MinBufferTime),
+		MaxSegmentDuration:         copyobj.String(mpd.MaxSegmentDuration),
 		SuggestedPresentationDelay: copyobj.String(mpd.SuggestedPresentationDelay),
 		TimeShiftBufferDepth:       copyobj.String(mpd.TimeShiftBufferDepth),
 		PublishTime:                copyobj.String(mpd.PublishTime),
