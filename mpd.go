@@ -185,6 +185,7 @@ type AdaptationSet struct {
 	MinHeight               *uint64          `xml:"minHeight,attr"`
 	MaxHeight               *uint64          `xml:"maxHeight,attr"`
 	MaxFrameRate            *string          `xml:"maxFrameRate,attr"`
+	Role                    *DescriptorType  `xml:"Role,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
@@ -205,39 +206,40 @@ type adaptationSetMarshal struct {
 	MinHeight               *uint64                 `xml:"minHeight,attr"`
 	MaxHeight               *uint64                 `xml:"maxHeight,attr"`
 	MaxFrameRate            *string                 `xml:"maxFrameRate,attr"`
+	Role                    *DescriptorType         `xml:"Role,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
 
 // Representation represents XSD's RepresentationType.
 type Representation struct {
-	ID                        *string                    `xml:"id,attr"`
-	Width                     *uint64                    `xml:"width,attr"`
-	Height                    *uint64                    `xml:"height,attr"`
-	SAR                       *string                    `xml:"sar,attr"`
-	FrameRate                 *string                    `xml:"frameRate,attr"`
-	Bandwidth                 *uint64                    `xml:"bandwidth,attr"`
-	AudioSamplingRate         *string                    `xml:"audioSamplingRate,attr"`
-	Codecs                    *string                    `xml:"codecs,attr"`
-	BaseURL                   *string                    `xml:"BaseURL,omitempty"`
-	ContentProtections        []DRMDescriptor            `xml:"ContentProtection,omitempty"`
-	SegmentTemplate           *SegmentTemplate           `xml:"SegmentTemplate,omitempty"`
-	AudioChannelConfiguration *AudioChannelConfiguration `xml:"AudioChannelConfiguration,omitempty"`
+	ID                        *string          `xml:"id,attr"`
+	Width                     *uint64          `xml:"width,attr"`
+	Height                    *uint64          `xml:"height,attr"`
+	SAR                       *string          `xml:"sar,attr"`
+	FrameRate                 *string          `xml:"frameRate,attr"`
+	Bandwidth                 *uint64          `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string          `xml:"audioSamplingRate,attr"`
+	Codecs                    *string          `xml:"codecs,attr"`
+	BaseURL                   *string          `xml:"BaseURL,omitempty"`
+	ContentProtections        []DRMDescriptor  `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
+	AudioChannelConfiguration *DescriptorType  `xml:"AudioChannelConfiguration,omitempty"`
 }
 
 type representationMarshal struct {
-	ID                        *string                    `xml:"id,attr"`
-	Width                     *uint64                    `xml:"width,attr"`
-	Height                    *uint64                    `xml:"height,attr"`
-	SAR                       *string                    `xml:"sar,attr"`
-	FrameRate                 *string                    `xml:"frameRate,attr"`
-	Bandwidth                 *uint64                    `xml:"bandwidth,attr"`
-	AudioSamplingRate         *string                    `xml:"audioSamplingRate,attr"`
-	Codecs                    *string                    `xml:"codecs,attr"`
-	BaseURL                   *string                    `xml:"BaseURL,omitempty"`
-	ContentProtections        []drmDescriptorMarshal     `xml:"ContentProtection,omitempty"`
-	SegmentTemplate           *SegmentTemplate           `xml:"SegmentTemplate,omitempty"`
-	AudioChannelConfiguration *AudioChannelConfiguration `xml:"AudioChannelConfiguration,omitempty"`
+	ID                        *string                `xml:"id,attr"`
+	Width                     *uint64                `xml:"width,attr"`
+	Height                    *uint64                `xml:"height,attr"`
+	SAR                       *string                `xml:"sar,attr"`
+	FrameRate                 *string                `xml:"frameRate,attr"`
+	Bandwidth                 *uint64                `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string                `xml:"audioSamplingRate,attr"`
+	Codecs                    *string                `xml:"codecs,attr"`
+	BaseURL                   *string                `xml:"BaseURL,omitempty"`
+	ContentProtections        []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
+	AudioChannelConfiguration *DescriptorType        `xml:"AudioChannelConfiguration,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
@@ -363,6 +365,7 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			MaxFrameRate:            copyobj.String(a.MaxFrameRate),
 			SubsegmentAlignment:     a.SubsegmentAlignment,
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
+			Role:                    copyDescriptorType(a.Role),
 			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
 		}
@@ -386,20 +389,21 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 			SAR:                       copyobj.String(r.SAR),
 			ContentProtections:        modifyContentProtections(r.ContentProtections),
 			BaseURL:                   copyobj.String(r.BaseURL),
-			AudioChannelConfiguration: copyAudioChannelConfiguration(r.AudioChannelConfiguration),
+			AudioChannelConfiguration: copyDescriptorType(r.AudioChannelConfiguration),
 		}
 		rsm = append(rsm, representation)
 	}
 	return rsm
 }
 
-func copyAudioChannelConfiguration(acc *AudioChannelConfiguration) *AudioChannelConfiguration {
-	if acc == nil {
+func copyDescriptorType(dt *DescriptorType) *DescriptorType {
+	if dt == nil {
 		return nil
 	}
-	return &AudioChannelConfiguration{
-		SchemeIDURI: copyobj.String(acc.SchemeIDURI),
-		Value:       copyobj.String(acc.Value),
+	return &DescriptorType{
+		SchemeIDURI: copyobj.String(dt.SchemeIDURI),
+		Value:       copyobj.String(dt.Value),
+		ID:          copyobj.String(dt.ID),
 	}
 }
 
@@ -459,8 +463,9 @@ func modifyPssh(p *Pssh) *psshMarshal {
 	}
 }
 
-// AudioChannelConfiguration represents XSD's AudioChannelConfiguration type.
-type AudioChannelConfiguration struct {
+// DescriptorType - used in many places to represent data.
+type DescriptorType struct {
 	SchemeIDURI *string `xml:"schemeIdUri,attr"`
 	Value       *string `xml:"value,attr,omitempty"`
+	ID          *string `xml:"id,attr,omitempty"`
 }
