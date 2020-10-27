@@ -99,7 +99,7 @@ func TestRepresentationEqual(t *testing.T) {
 
 func TestSegmentTemplateEqual(t *testing.T) {
 	a := &SegmentTemplate{}
-	require.Equal(t, 6, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 7, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function copySegmentTemplate")
 }
 
