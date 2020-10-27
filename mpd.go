@@ -163,6 +163,7 @@ type periodMarshal struct {
 
 // AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
+	ContentType             string           `xml:"contentType,attr,omitempty"`
 	MimeType                string           `xml:"mimeType,attr"`
 	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
@@ -176,6 +177,7 @@ type AdaptationSet struct {
 }
 
 type adaptationSetMarshal struct {
+	ContentType             string                  `xml:"contentType,attr,omitempty"`
 	MimeType                string                  `xml:"mimeType,attr"`
 	SegmentAlignment        ConditionalUint         `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64                 `xml:"startWithSAP,attr"`
@@ -314,6 +316,7 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			BitstreamSwitching:      copyobj.Bool(a.BitstreamSwitching),
 			Codecs:                  copyobj.String(a.Codecs),
 			Lang:                    copyobj.String(a.Lang),
+			ContentType:             a.ContentType,
 			MimeType:                a.MimeType,
 			SegmentAlignment:        a.SegmentAlignment,
 			StartWithSAP:            copyobj.UInt64(a.StartWithSAP),
