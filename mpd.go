@@ -63,44 +63,46 @@ var (
 
 // MPD represents root XML element for parse.
 type MPD struct {
-	XMLName                    xml.Name `xml:"MPD"`
-	XMLNS                      *string  `xml:"xmlns,attr"`
-	Type                       *string  `xml:"type,attr"`
-	MinimumUpdatePeriod        *string  `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string  `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string  `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string  `xml:"minBufferTime,attr"`
-	MaxSegmentDuration         *string  `xml:"maxSegmentDuration,attr,omitempty"`
-	SuggestedPresentationDelay *string  `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string  `xml:"timeShiftBufferDepth,attr"`
-	PublishTime                *string  `xml:"publishTime,attr"`
-	Profiles                   string   `xml:"profiles,attr"`
-	XSI                        *string  `xml:"xsi,attr,omitempty"`
-	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
-	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
-	ID                         *string  `xml:"id,attr"`
-	Period                     []Period `xml:"Period,omitempty"`
+	XMLName                    xml.Name            `xml:"MPD"`
+	XMLNS                      *string             `xml:"xmlns,attr"`
+	Type                       *string             `xml:"type,attr"`
+	MinimumUpdatePeriod        *string             `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string             `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string             `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string             `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string             `xml:"maxSegmentDuration,attr,omitempty"`
+	SuggestedPresentationDelay *string             `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string             `xml:"timeShiftBufferDepth,attr"`
+	PublishTime                *string             `xml:"publishTime,attr"`
+	Profiles                   string              `xml:"profiles,attr"`
+	XSI                        *string             `xml:"xsi,attr,omitempty"`
+	SCTE35                     *string             `xml:"scte35,attr,omitempty"`
+	XSISchemaLocation          *string             `xml:"schemaLocation,attr"`
+	ID                         *string             `xml:"id,attr"`
+	ProgramInformation         *ProgramInformation `xml:"ProgramInformation,omitempty"`
+	Period                     []Period            `xml:"Period,omitempty"`
 }
 
 // MPD represents root XML element for Marshal.
 type mpdMarshal struct {
-	XMLName                    xml.Name        `xml:"MPD"`
-	XSI                        *string         `xml:"xmlns:xsi,attr,omitempty"`
-	XMLNS                      *string         `xml:"xmlns,attr"`
-	XSISchemaLocation          *string         `xml:"xsi:schemaLocation,attr"`
-	ID                         *string         `xml:"id,attr"`
-	Type                       *string         `xml:"type,attr"`
-	PublishTime                *string         `xml:"publishTime,attr"`
-	MinimumUpdatePeriod        *string         `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string         `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string         `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string         `xml:"minBufferTime,attr"`
-	MaxSegmentDuration         *string         `xml:"maxSegmentDuration,attr,omitempty"`
-	SuggestedPresentationDelay *string         `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
-	Profiles                   string          `xml:"profiles,attr"`
-	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
-	Period                     []periodMarshal `xml:"Period,omitempty"`
+	XMLName                    xml.Name            `xml:"MPD"`
+	XSI                        *string             `xml:"xmlns:xsi,attr,omitempty"`
+	XMLNS                      *string             `xml:"xmlns,attr"`
+	XSISchemaLocation          *string             `xml:"xsi:schemaLocation,attr"`
+	ID                         *string             `xml:"id,attr"`
+	Type                       *string             `xml:"type,attr"`
+	PublishTime                *string             `xml:"publishTime,attr"`
+	MinimumUpdatePeriod        *string             `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string             `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string             `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string             `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string             `xml:"maxSegmentDuration,attr,omitempty"`
+	SuggestedPresentationDelay *string             `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string             `xml:"timeShiftBufferDepth,attr"`
+	Profiles                   string              `xml:"profiles,attr"`
+	SCTE35                     *string             `xml:"xmlns:scte35,attr,omitempty"`
+	ProgramInformation         *ProgramInformation `xml:"ProgramInformation,omitempty"`
+	Period                     []periodMarshal     `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -143,6 +145,11 @@ func (m *MPD) Encode() ([]byte, error) {
 // Decode parses MPD XML.
 func (m *MPD) Decode(b []byte) error {
 	return xml.Unmarshal(b, m)
+}
+
+// ProgramInformation - MPD Program info.
+type ProgramInformation struct {
+	Title string `xml:"Title,omitempty"`
 }
 
 // Period represents XSD's PeriodType.
@@ -296,6 +303,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		SCTE35:                     copyobj.String(mpd.SCTE35),
 		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
 		ID:                         copyobj.String(mpd.ID),
+		ProgramInformation:         copyProgramInformation(mpd.ProgramInformation),
 		Period:                     modifyPeriod(mpd.Period),
 	}
 }
@@ -316,6 +324,15 @@ func modifyPeriod(ps []Period) []periodMarshal {
 	}
 
 	return pms
+}
+
+func copyProgramInformation(p *ProgramInformation) *ProgramInformation {
+	if p == nil {
+		return nil
+	}
+	return &ProgramInformation{
+		Title: p.Title,
+	}
 }
 
 func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
