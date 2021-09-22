@@ -78,27 +78,27 @@ type MPD struct {
 	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
 	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
 	ID                         *string  `xml:"id,attr"`
-	Period                     *Period  `xml:"Period,omitempty"`
+	Period                     []Period `xml:"Period,omitempty"`
 }
 
 // MPD represents root XML element for Marshal.
 type mpdMarshal struct {
-	XMLName                    xml.Name       `xml:"MPD"`
-	XSI                        *string        `xml:"xmlns:xsi,attr,omitempty"`
-	XMLNS                      *string        `xml:"xmlns,attr"`
-	XSISchemaLocation          *string        `xml:"xsi:schemaLocation,attr"`
-	ID                         *string        `xml:"id,attr"`
-	Type                       *string        `xml:"type,attr"`
-	PublishTime                *string        `xml:"publishTime,attr"`
-	MinimumUpdatePeriod        *string        `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string        `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string        `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string        `xml:"minBufferTime,attr"`
-	SuggestedPresentationDelay *string        `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string        `xml:"timeShiftBufferDepth,attr"`
-	Profiles                   string         `xml:"profiles,attr"`
-	SCTE35                     *string        `xml:"xmlns:scte35,attr,omitempty"`
-	Period                     *periodMarshal `xml:"Period,omitempty"`
+	XMLName                    xml.Name        `xml:"MPD"`
+	XSI                        *string         `xml:"xmlns:xsi,attr,omitempty"`
+	XMLNS                      *string         `xml:"xmlns,attr"`
+	XSISchemaLocation          *string         `xml:"xsi:schemaLocation,attr"`
+	ID                         *string         `xml:"id,attr"`
+	Type                       *string         `xml:"type,attr"`
+	PublishTime                *string         `xml:"publishTime,attr"`
+	MinimumUpdatePeriod        *string         `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string         `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string         `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string         `xml:"minBufferTime,attr"`
+	SuggestedPresentationDelay *string         `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
+	Profiles                   string          `xml:"profiles,attr"`
+	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
+	Period                     []periodMarshal `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -168,7 +168,7 @@ type AdaptationSet struct {
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string          `xml:"lang,attr"`
-	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
+	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
@@ -181,7 +181,7 @@ type adaptationSetMarshal struct {
 	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string                 `xml:"lang,attr"`
-	ContentProtections      []descriptorMarshal     `xml:"ContentProtection,omitempty"`
+	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
@@ -196,25 +196,25 @@ type Representation struct {
 	Bandwidth          *uint64          `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
 	Codecs             *string          `xml:"codecs,attr"`
-	ContentProtections []Descriptor     `xml:"ContentProtection,omitempty"`
+	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 }
 
 type representationMarshal struct {
-	ID                 *string             `xml:"id,attr"`
-	Width              *uint64             `xml:"width,attr"`
-	Height             *uint64             `xml:"height,attr"`
-	SAR                *string             `xml:"sar,attr"`
-	FrameRate          *string             `xml:"frameRate,attr"`
-	Bandwidth          *uint64             `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string             `xml:"audioSamplingRate,attr"`
-	Codecs             *string             `xml:"codecs,attr"`
-	ContentProtections []descriptorMarshal `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate    `xml:"SegmentTemplate,omitempty"`
+	ID                 *string                `xml:"id,attr"`
+	Width              *uint64                `xml:"width,attr"`
+	Height             *uint64                `xml:"height,attr"`
+	SAR                *string                `xml:"sar,attr"`
+	FrameRate          *string                `xml:"frameRate,attr"`
+	Bandwidth          *uint64                `xml:"bandwidth,attr"`
+	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
+	Codecs             *string                `xml:"codecs,attr"`
+	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
+	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
-type Descriptor struct {
+type DRMDescriptor struct {
 	SchemeIDURI    *string `xml:"schemeIdUri,attr"`
 	Value          *string `xml:"value,attr,omitempty"`
 	CencDefaultKID *string `xml:"default_KID,attr,omitempty"`
@@ -222,7 +222,7 @@ type Descriptor struct {
 	Pssh           *Pssh   `xml:"pssh"`
 }
 
-type descriptorMarshal struct {
+type drmDescriptorMarshal struct {
 	SchemeIDURI    *string      `xml:"schemeIdUri,attr"`
 	Value          *string      `xml:"value,attr,omitempty"`
 	CencDefaultKID *string      `xml:"cenc:default_KID,attr,omitempty"`
@@ -279,16 +279,22 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 	}
 }
 
-func modifyPeriod(p *Period) *periodMarshal {
-	if p == nil {
+func modifyPeriod(ps []Period) []periodMarshal {
+	if ps == nil {
 		return nil
 	}
-	return &periodMarshal{
-		Duration:       copyobj.String(p.Duration),
-		ID:             copyobj.String(p.ID),
-		Start:          copyobj.String(p.Start),
-		AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
+	pms := make([]periodMarshal, 0, len(ps))
+	for _, p := range ps {
+		period := periodMarshal{
+			Duration:       copyobj.String(p.Duration),
+			ID:             copyobj.String(p.ID),
+			Start:          copyobj.String(p.Start),
+			AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
+		}
+		pms = append(pms, period)
 	}
+
+	return pms
 }
 
 func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
@@ -361,10 +367,10 @@ func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
 	return stm
 }
 
-func modifyContentProtections(ds []Descriptor) []descriptorMarshal {
-	dsm := make([]descriptorMarshal, 0, len(ds))
+func modifyContentProtections(ds []DRMDescriptor) []drmDescriptorMarshal {
+	dsm := make([]drmDescriptorMarshal, 0, len(ds))
 	for _, d := range ds {
-		descriptor := descriptorMarshal{
+		descriptor := drmDescriptorMarshal{
 			CencDefaultKID: copyobj.String(d.CencDefaultKID),
 			SchemeIDURI:    copyobj.String(d.SchemeIDURI),
 			Value:          copyobj.String(d.Value),

@@ -106,8 +106,8 @@ func TestSegmentTimelineSEqual(t *testing.T) {
 }
 
 func TestDescriptorEqual(t *testing.T) {
-	a := &Descriptor{}
-	b := &descriptorMarshal{}
+	a := &DRMDescriptor{}
+	b := &drmDescriptorMarshal{}
 	require.Equal(t, 5, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyContentProtections")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
