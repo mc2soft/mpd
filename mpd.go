@@ -168,7 +168,7 @@ type AdaptationSet struct {
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string          `xml:"lang,attr"`
-	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
+	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
@@ -181,7 +181,7 @@ type adaptationSetMarshal struct {
 	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string                 `xml:"lang,attr"`
-	ContentProtections      []descriptorMarshal     `xml:"ContentProtection,omitempty"`
+	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
@@ -196,25 +196,25 @@ type Representation struct {
 	Bandwidth          *uint64          `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
 	Codecs             *string          `xml:"codecs,attr"`
-	ContentProtections []Descriptor     `xml:"ContentProtection,omitempty"`
+	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 }
 
 type representationMarshal struct {
-	ID                 *string             `xml:"id,attr"`
-	Width              *uint64             `xml:"width,attr"`
-	Height             *uint64             `xml:"height,attr"`
-	SAR                *string             `xml:"sar,attr"`
-	FrameRate          *string             `xml:"frameRate,attr"`
-	Bandwidth          *uint64             `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string             `xml:"audioSamplingRate,attr"`
-	Codecs             *string             `xml:"codecs,attr"`
-	ContentProtections []descriptorMarshal `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate    `xml:"SegmentTemplate,omitempty"`
+	ID                 *string                `xml:"id,attr"`
+	Width              *uint64                `xml:"width,attr"`
+	Height             *uint64                `xml:"height,attr"`
+	SAR                *string                `xml:"sar,attr"`
+	FrameRate          *string                `xml:"frameRate,attr"`
+	Bandwidth          *uint64                `xml:"bandwidth,attr"`
+	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
+	Codecs             *string                `xml:"codecs,attr"`
+	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
+	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
-type Descriptor struct {
+type DRMDescriptor struct {
 	SchemeIDURI    *string `xml:"schemeIdUri,attr"`
 	Value          *string `xml:"value,attr,omitempty"`
 	CencDefaultKID *string `xml:"default_KID,attr,omitempty"`
@@ -222,7 +222,7 @@ type Descriptor struct {
 	Pssh           *Pssh   `xml:"pssh"`
 }
 
-type descriptorMarshal struct {
+type drmDescriptorMarshal struct {
 	SchemeIDURI    *string      `xml:"schemeIdUri,attr"`
 	Value          *string      `xml:"value,attr,omitempty"`
 	CencDefaultKID *string      `xml:"cenc:default_KID,attr,omitempty"`
@@ -367,10 +367,10 @@ func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
 	return stm
 }
 
-func modifyContentProtections(ds []Descriptor) []descriptorMarshal {
-	dsm := make([]descriptorMarshal, 0, len(ds))
+func modifyContentProtections(ds []DRMDescriptor) []drmDescriptorMarshal {
+	dsm := make([]drmDescriptorMarshal, 0, len(ds))
 	for _, d := range ds {
-		descriptor := descriptorMarshal{
+		descriptor := drmDescriptorMarshal{
 			CencDefaultKID: copyobj.String(d.CencDefaultKID),
 			SchemeIDURI:    copyobj.String(d.SchemeIDURI),
 			Value:          copyobj.String(d.Value),
