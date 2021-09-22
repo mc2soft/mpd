@@ -78,27 +78,27 @@ type MPD struct {
 	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
 	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
 	ID                         *string  `xml:"id,attr"`
-	Period                     *Period  `xml:"Period,omitempty"`
+	Period                     []Period `xml:"Period,omitempty"`
 }
 
 // MPD represents root XML element for Marshal.
 type mpdMarshal struct {
-	XMLName                    xml.Name       `xml:"MPD"`
-	XSI                        *string        `xml:"xmlns:xsi,attr,omitempty"`
-	XMLNS                      *string        `xml:"xmlns,attr"`
-	XSISchemaLocation          *string        `xml:"xsi:schemaLocation,attr"`
-	ID                         *string        `xml:"id,attr"`
-	Type                       *string        `xml:"type,attr"`
-	PublishTime                *string        `xml:"publishTime,attr"`
-	MinimumUpdatePeriod        *string        `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string        `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string        `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string        `xml:"minBufferTime,attr"`
-	SuggestedPresentationDelay *string        `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string        `xml:"timeShiftBufferDepth,attr"`
-	Profiles                   string         `xml:"profiles,attr"`
-	SCTE35                     *string        `xml:"xmlns:scte35,attr,omitempty"`
-	Period                     *periodMarshal `xml:"Period,omitempty"`
+	XMLName                    xml.Name        `xml:"MPD"`
+	XSI                        *string         `xml:"xmlns:xsi,attr,omitempty"`
+	XMLNS                      *string         `xml:"xmlns,attr"`
+	XSISchemaLocation          *string         `xml:"xsi:schemaLocation,attr"`
+	ID                         *string         `xml:"id,attr"`
+	Type                       *string         `xml:"type,attr"`
+	PublishTime                *string         `xml:"publishTime,attr"`
+	MinimumUpdatePeriod        *string         `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string         `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string         `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string         `xml:"minBufferTime,attr"`
+	SuggestedPresentationDelay *string         `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
+	Profiles                   string          `xml:"profiles,attr"`
+	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
+	Period                     []periodMarshal `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -279,16 +279,22 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 	}
 }
 
-func modifyPeriod(p *Period) *periodMarshal {
-	if p == nil {
+func modifyPeriod(ps []Period) []periodMarshal {
+	if ps == nil {
 		return nil
 	}
-	return &periodMarshal{
-		Duration:       copyobj.String(p.Duration),
-		ID:             copyobj.String(p.ID),
-		Start:          copyobj.String(p.Start),
-		AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
+	pms := make([]periodMarshal, 0, len(ps))
+	for _, p := range ps {
+		period := periodMarshal{
+			Duration:       copyobj.String(p.Duration),
+			ID:             copyobj.String(p.ID),
+			Start:          copyobj.String(p.Start),
+			AdaptationSets: modifyAdaptationSets(p.AdaptationSets),
+		}
+		pms = append(pms, period)
 	}
+
+	return pms
 }
 
 func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
