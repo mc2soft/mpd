@@ -168,6 +168,7 @@ type AdaptationSet struct {
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string          `xml:"lang,attr"`
+	ContentProtections      []Descriptor     `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
@@ -180,6 +181,7 @@ type adaptationSetMarshal struct {
 	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string                 `xml:"lang,attr"`
+	ContentProtections      []descriptorMarshal     `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
@@ -305,6 +307,7 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			SubsegmentAlignment:     a.SubsegmentAlignment,
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
 			Representations:         modifyRepresentations(a.Representations),
+			ContentProtections:      modifyContentProtections(a.ContentProtections),
 		}
 		asm = append(asm, adaptationSet)
 	}

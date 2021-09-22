@@ -41,6 +41,10 @@ func testUnmarshalMarshal(c *C, name string) {
 	}
 }
 
+func (s *MPDSuite) TestUnmarshalMarshalLiveFlussonic(c *C) {
+	testUnmarshalMarshal(c, "fixture_flussonic_live.mpd")
+}
+
 func (s *MPDSuite) TestUnmarshalMarshalVod(c *C) {
 	testUnmarshalMarshal(c, "fixture_elemental_delta_vod.mpd")
 }
@@ -54,35 +58,35 @@ func (s *MPDSuite) TestUnmarshalMarshalLiveDelta161(c *C) {
 }
 
 func TestMPDEqual(t *testing.T) {
-	mpd := &MPD{}
-	mpdM := &mpdMarshal{}
-	require.Equal(t, 16, reflect.ValueOf(mpd).Elem().NumField(),
+	a := &MPD{}
+	b := &mpdMarshal{}
+	require.Equal(t, 16, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyMPD")
-	require.Equal(t, reflect.ValueOf(mpd).Elem().NumField(), reflect.ValueOf(mpdM).Elem().NumField(),
+	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"MPD element count not equal mpdMarshal")
 }
 
 func TestPeriodEqual(t *testing.T) {
-	mpd := &Period{}
-	mpdM := &periodMarshal{}
-	require.Equal(t, 4, reflect.ValueOf(mpd).Elem().NumField(),
+	a := &Period{}
+	b := &periodMarshal{}
+	require.Equal(t, 4, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyPeriod")
-	require.Equal(t, reflect.ValueOf(mpd).Elem().NumField(), reflect.ValueOf(mpdM).Elem().NumField(),
+	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"Period element count not equal periodMarshal")
 }
 
 func TestAdaptationSetEqual(t *testing.T) {
-	mpd := &AdaptationSet{}
-	mpdM := &adaptationSetMarshal{}
-	require.Equal(t, 9, reflect.ValueOf(mpd).Elem().NumField(),
+	a := &AdaptationSet{}
+	b := &adaptationSetMarshal{}
+	require.Equal(t, 10, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyAdaptationSets")
-	require.Equal(t, reflect.ValueOf(mpd).Elem().NumField(), reflect.ValueOf(mpdM).Elem().NumField(),
+	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"AdaptationSet element count not equal adaptationSetMarshal")
 }
 
 func TestRepresentationEqual(t *testing.T) {
 	a := &Representation{}
-	b := &Representation{}
+	b := &representationMarshal{}
 	require.Equal(t, 10, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyRepresentations")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
