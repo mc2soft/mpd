@@ -196,9 +196,9 @@ type Representation struct {
 	Bandwidth          *uint64          `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
 	Codecs             *string          `xml:"codecs,attr"`
+	BaseURL            *string          `xml:"BaseURL,omitempty"`
 	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
-	BaseURL            *string          `xml:"BaseURL,omitempty"`
 }
 
 type representationMarshal struct {
@@ -210,9 +210,9 @@ type representationMarshal struct {
 	Bandwidth          *uint64                `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
 	Codecs             *string                `xml:"codecs,attr"`
+	BaseURL            *string                `xml:"BaseURL,omitempty"`
 	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
-	BaseURL            *string                `xml:"BaseURL,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.

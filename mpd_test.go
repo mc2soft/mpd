@@ -57,6 +57,10 @@ func (s *MPDSuite) TestUnmarshalMarshalLiveDelta161(c *C) {
 	testUnmarshalMarshal(c, "fixture_elemental_delta_vod_multi_drm.mpd")
 }
 
+func (s *MPDSuite) TestUnmarshalMarshalVodBaseURL(c *C) {
+	testUnmarshalMarshal(c, "fixture_vod_with_base_url.mpd")
+}
+
 func TestMPDEqual(t *testing.T) {
 	a := &MPD{}
 	b := &mpdMarshal{}
