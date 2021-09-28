@@ -196,6 +196,7 @@ type Representation struct {
 	Bandwidth          *uint64          `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
 	Codecs             *string          `xml:"codecs,attr"`
+	BaseURL            *string          `xml:"BaseURL,omitempty"`
 	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 }
@@ -209,6 +210,7 @@ type representationMarshal struct {
 	Bandwidth          *uint64                `xml:"bandwidth,attr"`
 	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
 	Codecs             *string                `xml:"codecs,attr"`
+	BaseURL            *string                `xml:"BaseURL,omitempty"`
 	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
 }
@@ -334,6 +336,7 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
 			SAR:                copyobj.String(r.SAR),
 			ContentProtections: modifyContentProtections(r.ContentProtections),
+			BaseURL:            copyobj.String(r.BaseURL),
 		}
 		rsm = append(rsm, representation)
 	}
