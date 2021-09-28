@@ -198,7 +198,7 @@ type Representation struct {
 	Codecs             *string          `xml:"codecs,attr"`
 	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
-	BaseURL            string           `xml:"BaseURL,omitempty"`
+	BaseURL            *string          `xml:"BaseURL,omitempty"`
 }
 
 type representationMarshal struct {
