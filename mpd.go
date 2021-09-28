@@ -212,6 +212,7 @@ type representationMarshal struct {
 	Codecs             *string                `xml:"codecs,attr"`
 	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
 	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
+	BaseURL            *string                `xml:"BaseURL,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
@@ -335,6 +336,7 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
 			SAR:                copyobj.String(r.SAR),
 			ContentProtections: modifyContentProtections(r.ContentProtections),
+			BaseURL:            copyobj.String(r.BaseURL),
 		}
 		rsm = append(rsm, representation)
 	}
