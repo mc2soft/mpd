@@ -63,42 +63,46 @@ var (
 
 // MPD represents root XML element for parse.
 type MPD struct {
-	XMLName                    xml.Name `xml:"MPD"`
-	XMLNS                      *string  `xml:"xmlns,attr"`
-	Type                       *string  `xml:"type,attr"`
-	MinimumUpdatePeriod        *string  `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string  `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string  `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string  `xml:"minBufferTime,attr"`
-	SuggestedPresentationDelay *string  `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string  `xml:"timeShiftBufferDepth,attr"`
-	PublishTime                *string  `xml:"publishTime,attr"`
-	Profiles                   string   `xml:"profiles,attr"`
-	XSI                        *string  `xml:"xsi,attr,omitempty"`
-	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
-	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
-	ID                         *string  `xml:"id,attr"`
-	Period                     []Period `xml:"Period,omitempty"`
+	XMLName                    xml.Name            `xml:"MPD"`
+	XMLNS                      *string             `xml:"xmlns,attr"`
+	Type                       *string             `xml:"type,attr"`
+	MinimumUpdatePeriod        *string             `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string             `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string             `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string             `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string             `xml:"maxSegmentDuration,attr,omitempty"`
+	SuggestedPresentationDelay *string             `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string             `xml:"timeShiftBufferDepth,attr"`
+	PublishTime                *string             `xml:"publishTime,attr"`
+	Profiles                   string              `xml:"profiles,attr"`
+	XSI                        *string             `xml:"xsi,attr,omitempty"`
+	SCTE35                     *string             `xml:"scte35,attr,omitempty"`
+	XSISchemaLocation          *string             `xml:"schemaLocation,attr"`
+	ID                         *string             `xml:"id,attr"`
+	ProgramInformation         *ProgramInformation `xml:"ProgramInformation,omitempty"`
+	Period                     []Period            `xml:"Period,omitempty"`
 }
 
 // MPD represents root XML element for Marshal.
 type mpdMarshal struct {
-	XMLName                    xml.Name        `xml:"MPD"`
-	XSI                        *string         `xml:"xmlns:xsi,attr,omitempty"`
-	XMLNS                      *string         `xml:"xmlns,attr"`
-	XSISchemaLocation          *string         `xml:"xsi:schemaLocation,attr"`
-	ID                         *string         `xml:"id,attr"`
-	Type                       *string         `xml:"type,attr"`
-	PublishTime                *string         `xml:"publishTime,attr"`
-	MinimumUpdatePeriod        *string         `xml:"minimumUpdatePeriod,attr"`
-	AvailabilityStartTime      *string         `xml:"availabilityStartTime,attr"`
-	MediaPresentationDuration  *string         `xml:"mediaPresentationDuration,attr"`
-	MinBufferTime              *string         `xml:"minBufferTime,attr"`
-	SuggestedPresentationDelay *string         `xml:"suggestedPresentationDelay,attr"`
-	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
-	Profiles                   string          `xml:"profiles,attr"`
-	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
-	Period                     []periodMarshal `xml:"Period,omitempty"`
+	XMLName                    xml.Name            `xml:"MPD"`
+	XSI                        *string             `xml:"xmlns:xsi,attr,omitempty"`
+	XMLNS                      *string             `xml:"xmlns,attr"`
+	XSISchemaLocation          *string             `xml:"xsi:schemaLocation,attr"`
+	ID                         *string             `xml:"id,attr"`
+	Type                       *string             `xml:"type,attr"`
+	PublishTime                *string             `xml:"publishTime,attr"`
+	MinimumUpdatePeriod        *string             `xml:"minimumUpdatePeriod,attr"`
+	AvailabilityStartTime      *string             `xml:"availabilityStartTime,attr"`
+	MediaPresentationDuration  *string             `xml:"mediaPresentationDuration,attr"`
+	MinBufferTime              *string             `xml:"minBufferTime,attr"`
+	MaxSegmentDuration         *string             `xml:"maxSegmentDuration,attr,omitempty"`
+	SuggestedPresentationDelay *string             `xml:"suggestedPresentationDelay,attr"`
+	TimeShiftBufferDepth       *string             `xml:"timeShiftBufferDepth,attr"`
+	Profiles                   string              `xml:"profiles,attr"`
+	SCTE35                     *string             `xml:"xmlns:scte35,attr,omitempty"`
+	ProgramInformation         *ProgramInformation `xml:"ProgramInformation,omitempty"`
+	Period                     []periodMarshal     `xml:"Period,omitempty"`
 }
 
 // Do not try to use encoding.TextMarshaler and encoding.TextUnmarshaler:
@@ -143,6 +147,11 @@ func (m *MPD) Decode(b []byte) error {
 	return xml.Unmarshal(b, m)
 }
 
+// ProgramInformation - MPD Program info.
+type ProgramInformation struct {
+	Title string `xml:"Title,omitempty"`
+}
+
 // Period represents XSD's PeriodType.
 type Period struct {
 	Start          *string          `xml:"start,attr"`
@@ -161,6 +170,7 @@ type periodMarshal struct {
 
 // AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
+	ContentType             string           `xml:"contentType,attr,omitempty"`
 	MimeType                string           `xml:"mimeType,attr"`
 	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
@@ -168,12 +178,21 @@ type AdaptationSet struct {
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string          `xml:"lang,attr"`
+	Par                     *string          `xml:"par,attr"`
+	MinWidth                *uint64          `xml:"minWidth,attr"`
+	MaxWidth                *uint64          `xml:"maxWidth,attr"`
+	MinHeight               *uint64          `xml:"minHeight,attr"`
+	MaxHeight               *uint64          `xml:"maxHeight,attr"`
+	MaxFrameRate            *string          `xml:"maxFrameRate,attr"`
 	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
+	Role                    *DescriptorType  `xml:"Role,omitempty"`
+	SegmentTemplate         *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
 
 type adaptationSetMarshal struct {
+	ContentType             string                  `xml:"contentType,attr,omitempty"`
 	MimeType                string                  `xml:"mimeType,attr"`
 	SegmentAlignment        ConditionalUint         `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64                 `xml:"startWithSAP,attr"`
@@ -181,38 +200,48 @@ type adaptationSetMarshal struct {
 	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string                 `xml:"lang,attr"`
+	Par                     *string                 `xml:"par,attr"`
+	MinWidth                *uint64                 `xml:"minWidth,attr"`
+	MaxWidth                *uint64                 `xml:"maxWidth,attr"`
+	MinHeight               *uint64                 `xml:"minHeight,attr"`
+	MaxHeight               *uint64                 `xml:"maxHeight,attr"`
+	MaxFrameRate            *string                 `xml:"maxFrameRate,attr"`
 	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
+	Role                    *DescriptorType         `xml:"Role,omitempty"`
+	SegmentTemplate         *SegmentTemplate        `xml:"SegmentTemplate,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
 
 // Representation represents XSD's RepresentationType.
 type Representation struct {
-	ID                 *string          `xml:"id,attr"`
-	Width              *uint64          `xml:"width,attr"`
-	Height             *uint64          `xml:"height,attr"`
-	SAR                *string          `xml:"sar,attr"`
-	FrameRate          *string          `xml:"frameRate,attr"`
-	Bandwidth          *uint64          `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
-	Codecs             *string          `xml:"codecs,attr"`
-	BaseURL            *string          `xml:"BaseURL,omitempty"`
-	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
+	ID                        *string          `xml:"id,attr"`
+	Width                     *uint64          `xml:"width,attr"`
+	Height                    *uint64          `xml:"height,attr"`
+	SAR                       *string          `xml:"sar,attr"`
+	FrameRate                 *string          `xml:"frameRate,attr"`
+	Bandwidth                 *uint64          `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string          `xml:"audioSamplingRate,attr"`
+	Codecs                    *string          `xml:"codecs,attr"`
+	BaseURL                   *string          `xml:"BaseURL,omitempty"`
+	ContentProtections        []DRMDescriptor  `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
+	AudioChannelConfiguration *DescriptorType  `xml:"AudioChannelConfiguration,omitempty"`
 }
 
 type representationMarshal struct {
-	ID                 *string                `xml:"id,attr"`
-	Width              *uint64                `xml:"width,attr"`
-	Height             *uint64                `xml:"height,attr"`
-	SAR                *string                `xml:"sar,attr"`
-	FrameRate          *string                `xml:"frameRate,attr"`
-	Bandwidth          *uint64                `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
-	Codecs             *string                `xml:"codecs,attr"`
-	BaseURL            *string                `xml:"BaseURL,omitempty"`
-	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
+	ID                        *string                `xml:"id,attr"`
+	Width                     *uint64                `xml:"width,attr"`
+	Height                    *uint64                `xml:"height,attr"`
+	SAR                       *string                `xml:"sar,attr"`
+	FrameRate                 *string                `xml:"frameRate,attr"`
+	Bandwidth                 *uint64                `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string                `xml:"audioSamplingRate,attr"`
+	Codecs                    *string                `xml:"codecs,attr"`
+	BaseURL                   *string                `xml:"BaseURL,omitempty"`
+	ContentProtections        []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
+	AudioChannelConfiguration *DescriptorType        `xml:"AudioChannelConfiguration,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
@@ -232,7 +261,7 @@ type drmDescriptorMarshal struct {
 	Pssh           *psshMarshal `xml:"cenc:pssh"`
 }
 
-// Pssh represents XSD's CencPsshType .
+// Pssh represents XSD's CencPsshType.
 type Pssh struct {
 	Cenc  *string `xml:"cenc,attr"`
 	Value *string `xml:",chardata"`
@@ -245,12 +274,18 @@ type psshMarshal struct {
 
 // SegmentTemplate represents XSD's SegmentTemplateType.
 type SegmentTemplate struct {
-	Timescale              *uint64            `xml:"timescale,attr"`
-	Media                  *string            `xml:"media,attr"`
-	Initialization         *string            `xml:"initialization,attr"`
-	StartNumber            *uint64            `xml:"startNumber,attr"`
-	PresentationTimeOffset *uint64            `xml:"presentationTimeOffset,attr"`
-	SegmentTimelineS       []SegmentTimelineS `xml:"SegmentTimeline>S,omitempty"`
+	Timescale              *uint64          `xml:"timescale,attr"`
+	Media                  *string          `xml:"media,attr"`
+	Initialization         *string          `xml:"initialization,attr"`
+	Duration               *uint64          `xml:"duration,attr"`
+	StartNumber            *uint64          `xml:"startNumber,attr"`
+	PresentationTimeOffset *uint64          `xml:"presentationTimeOffset,attr"`
+	SegmentTimeline        *SegmentTimeline `xml:"SegmentTimeline,omitempty"`
+}
+
+// SegmentTimeLine represent a SegmentTimeline node.
+type SegmentTimeline struct {
+	S []SegmentTimelineS `xml:"S,omitempty"`
 }
 
 // SegmentTimelineS represents XSD's SegmentTimelineType's inner S elements.
@@ -268,6 +303,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		AvailabilityStartTime:      copyobj.String(mpd.AvailabilityStartTime),
 		MediaPresentationDuration:  copyobj.String(mpd.MediaPresentationDuration),
 		MinBufferTime:              copyobj.String(mpd.MinBufferTime),
+		MaxSegmentDuration:         copyobj.String(mpd.MaxSegmentDuration),
 		SuggestedPresentationDelay: copyobj.String(mpd.SuggestedPresentationDelay),
 		TimeShiftBufferDepth:       copyobj.String(mpd.TimeShiftBufferDepth),
 		PublishTime:                copyobj.String(mpd.PublishTime),
@@ -277,6 +313,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		SCTE35:                     copyobj.String(mpd.SCTE35),
 		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
 		ID:                         copyobj.String(mpd.ID),
+		ProgramInformation:         copyProgramInformation(mpd.ProgramInformation),
 		Period:                     modifyPeriod(mpd.Period),
 	}
 }
@@ -299,6 +336,15 @@ func modifyPeriod(ps []Period) []periodMarshal {
 	return pms
 }
 
+func copyProgramInformation(p *ProgramInformation) *ProgramInformation {
+	if p == nil {
+		return nil
+	}
+	return &ProgramInformation{
+		Title: p.Title,
+	}
+}
+
 func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 	if as == nil {
 		return nil
@@ -309,13 +355,22 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			BitstreamSwitching:      copyobj.Bool(a.BitstreamSwitching),
 			Codecs:                  copyobj.String(a.Codecs),
 			Lang:                    copyobj.String(a.Lang),
+			ContentType:             a.ContentType,
 			MimeType:                a.MimeType,
 			SegmentAlignment:        a.SegmentAlignment,
 			StartWithSAP:            copyobj.UInt64(a.StartWithSAP),
+			Par:                     copyobj.String(a.Par),
+			MinWidth:                copyobj.UInt64(a.MinWidth),
+			MaxWidth:                copyobj.UInt64(a.MaxWidth),
+			MinHeight:               copyobj.UInt64(a.MinHeight),
+			MaxHeight:               copyobj.UInt64(a.MaxHeight),
+			MaxFrameRate:            copyobj.String(a.MaxFrameRate),
 			SubsegmentAlignment:     a.SubsegmentAlignment,
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
-			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
+			Role:                    copyDescriptorType(a.Role),
+			SegmentTemplate:         copySegmentTemplate(a.SegmentTemplate),
+			Representations:         modifyRepresentations(a.Representations),
 		}
 		asm = append(asm, adaptationSet)
 	}
@@ -326,21 +381,33 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 	rsm := make([]representationMarshal, 0, len(rs))
 	for _, r := range rs {
 		representation := representationMarshal{
-			AudioSamplingRate:  copyobj.String(r.AudioSamplingRate),
-			Bandwidth:          copyobj.UInt64(r.Bandwidth),
-			Codecs:             copyobj.String(r.Codecs),
-			FrameRate:          copyobj.String(r.FrameRate),
-			Height:             copyobj.UInt64(r.Height),
-			ID:                 copyobj.String(r.ID),
-			Width:              copyobj.UInt64(r.Width),
-			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
-			SAR:                copyobj.String(r.SAR),
-			ContentProtections: modifyContentProtections(r.ContentProtections),
-			BaseURL:            copyobj.String(r.BaseURL),
+			AudioSamplingRate:         copyobj.String(r.AudioSamplingRate),
+			Bandwidth:                 copyobj.UInt64(r.Bandwidth),
+			Codecs:                    copyobj.String(r.Codecs),
+			FrameRate:                 copyobj.String(r.FrameRate),
+			Height:                    copyobj.UInt64(r.Height),
+			ID:                        copyobj.String(r.ID),
+			Width:                     copyobj.UInt64(r.Width),
+			SegmentTemplate:           copySegmentTemplate(r.SegmentTemplate),
+			SAR:                       copyobj.String(r.SAR),
+			ContentProtections:        modifyContentProtections(r.ContentProtections),
+			BaseURL:                   copyobj.String(r.BaseURL),
+			AudioChannelConfiguration: copyDescriptorType(r.AudioChannelConfiguration),
 		}
 		rsm = append(rsm, representation)
 	}
 	return rsm
+}
+
+func copyDescriptorType(dt *DescriptorType) *DescriptorType {
+	if dt == nil {
+		return nil
+	}
+	return &DescriptorType{
+		SchemeIDURI: copyobj.String(dt.SchemeIDURI),
+		Value:       copyobj.String(dt.Value),
+		ID:          copyobj.String(dt.ID),
+	}
 }
 
 func copySegmentTemplate(st *SegmentTemplate) *SegmentTemplate {
@@ -351,15 +418,19 @@ func copySegmentTemplate(st *SegmentTemplate) *SegmentTemplate {
 		Timescale:              copyobj.UInt64(st.Timescale),
 		Media:                  copyobj.String(st.Media),
 		Initialization:         copyobj.String(st.Initialization),
+		Duration:               copyobj.UInt64(st.Duration),
 		StartNumber:            copyobj.UInt64(st.StartNumber),
 		PresentationTimeOffset: copyobj.UInt64(st.PresentationTimeOffset),
-		SegmentTimelineS:       copySegmentTimelineS(st.SegmentTimelineS),
+		SegmentTimeline:        copySegmentTimeline(st.SegmentTimeline),
 	}
 }
 
-func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
-	stm := make([]SegmentTimelineS, 0, len(st))
-	for _, s := range st {
+func copySegmentTimeline(st *SegmentTimeline) *SegmentTimeline {
+	if st == nil || len(st.S) == 0 {
+		return nil
+	}
+	stm := make([]SegmentTimelineS, 0, len(st.S))
+	for _, s := range st.S {
 		segmentTimelineS := SegmentTimelineS{
 			T: s.T,
 			D: s.D,
@@ -367,7 +438,7 @@ func copySegmentTimelineS(st []SegmentTimelineS) []SegmentTimelineS {
 		}
 		stm = append(stm, segmentTimelineS)
 	}
-	return stm
+	return &SegmentTimeline{S: stm}
 }
 
 func modifyContentProtections(ds []DRMDescriptor) []drmDescriptorMarshal {
@@ -393,4 +464,11 @@ func modifyPssh(p *Pssh) *psshMarshal {
 		Cenc:  copyobj.String(p.Cenc),
 		Value: copyobj.String(p.Value),
 	}
+}
+
+// DescriptorType - used in many places to represent data.
+type DescriptorType struct {
+	SchemeIDURI *string `xml:"schemeIdUri,attr"`
+	Value       *string `xml:"value,attr,omitempty"`
+	ID          *string `xml:"id,attr,omitempty"`
 }

@@ -1,6 +1,7 @@
 package mpd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"reflect"
 	"strings"
@@ -17,6 +18,7 @@ type MPDSuite struct{}
 var _ = Suite(&MPDSuite{})
 
 func testUnmarshalMarshal(c *C, name string) {
+	fmt.Println(name)
 	expected, err := ioutil.ReadFile(name)
 	c.Assert(err, IsNil)
 
@@ -61,10 +63,14 @@ func (s *MPDSuite) TestUnmarshalMarshalVodBaseURL(c *C) {
 	testUnmarshalMarshal(c, "fixture_vod_with_base_url.mpd")
 }
 
+func (s *MPDSuite) TestUnmarshalMarshalLiveSimVod(c *C) {
+	testUnmarshalMarshal(c, "fixture_livesim_vod.mpd")
+}
+
 func TestMPDEqual(t *testing.T) {
 	a := &MPD{}
 	b := &mpdMarshal{}
-	require.Equal(t, 16, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 18, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyMPD")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"MPD element count not equal mpdMarshal")
@@ -82,7 +88,7 @@ func TestPeriodEqual(t *testing.T) {
 func TestAdaptationSetEqual(t *testing.T) {
 	a := &AdaptationSet{}
 	b := &adaptationSetMarshal{}
-	require.Equal(t, 10, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 19, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyAdaptationSets")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"AdaptationSet element count not equal adaptationSetMarshal")
@@ -91,7 +97,7 @@ func TestAdaptationSetEqual(t *testing.T) {
 func TestRepresentationEqual(t *testing.T) {
 	a := &Representation{}
 	b := &representationMarshal{}
-	require.Equal(t, 11, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 12, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyRepresentations")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"Representation element count not equal Representation")
@@ -99,7 +105,7 @@ func TestRepresentationEqual(t *testing.T) {
 
 func TestSegmentTemplateEqual(t *testing.T) {
 	a := &SegmentTemplate{}
-	require.Equal(t, 6, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 7, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function copySegmentTemplate")
 }
 
