@@ -82,7 +82,7 @@ func TestPeriodEqual(t *testing.T) {
 func TestAdaptationSetEqual(t *testing.T) {
 	a := &AdaptationSet{}
 	b := &adaptationSetMarshal{}
-	require.Equal(t, 18, reflect.ValueOf(a).Elem().NumField(),
+	require.Equal(t, 19, reflect.ValueOf(a).Elem().NumField(),
 		"model was updated, need to update this test and function modifyAdaptationSets")
 	require.Equal(t, reflect.ValueOf(a).Elem().NumField(), reflect.ValueOf(b).Elem().NumField(),
 		"AdaptationSet element count not equal adaptationSetMarshal")

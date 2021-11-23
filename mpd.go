@@ -178,14 +178,15 @@ type AdaptationSet struct {
 	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string          `xml:"lang,attr"`
-	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Par                     *string          `xml:"par,attr"`
 	MinWidth                *uint64          `xml:"minWidth,attr"`
 	MaxWidth                *uint64          `xml:"maxWidth,attr"`
 	MinHeight               *uint64          `xml:"minHeight,attr"`
 	MaxHeight               *uint64          `xml:"maxHeight,attr"`
 	MaxFrameRate            *string          `xml:"maxFrameRate,attr"`
+	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Role                    *DescriptorType  `xml:"Role,omitempty"`
+	SegmentTemplate         *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
 }
@@ -199,14 +200,15 @@ type adaptationSetMarshal struct {
 	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
 	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
 	Lang                    *string                 `xml:"lang,attr"`
-	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Par                     *string                 `xml:"par,attr"`
 	MinWidth                *uint64                 `xml:"minWidth,attr"`
 	MaxWidth                *uint64                 `xml:"maxWidth,attr"`
 	MinHeight               *uint64                 `xml:"minHeight,attr"`
 	MaxHeight               *uint64                 `xml:"maxHeight,attr"`
 	MaxFrameRate            *string                 `xml:"maxFrameRate,attr"`
+	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Role                    *DescriptorType         `xml:"Role,omitempty"`
+	SegmentTemplate         *SegmentTemplate        `xml:"SegmentTemplate,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
 }
@@ -365,9 +367,10 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			MaxFrameRate:            copyobj.String(a.MaxFrameRate),
 			SubsegmentAlignment:     a.SubsegmentAlignment,
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
-			Role:                    copyDescriptorType(a.Role),
-			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
+			Role:                    copyDescriptorType(a.Role),
+			SegmentTemplate:         copySegmentTemplate(a.SegmentTemplate),
+			Representations:         modifyRepresentations(a.Representations),
 		}
 		asm = append(asm, adaptationSet)
 	}
