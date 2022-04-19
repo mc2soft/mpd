@@ -171,6 +171,7 @@ type AdaptationSet struct {
 	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
+	BaseURL                 *string          `xml:"BaseURL,omitempty"`
 }
 
 type adaptationSetMarshal struct {
@@ -184,6 +185,7 @@ type adaptationSetMarshal struct {
 	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
+	BaseURL                 *string                 `xml:"BaseURL,omitempty"`
 }
 
 // Representation represents XSD's RepresentationType.
@@ -316,6 +318,7 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
 			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
+			BaseURL:                 copyobj.String(a.BaseURL),
 		}
 		asm = append(asm, adaptationSet)
 	}
