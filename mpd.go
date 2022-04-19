@@ -78,6 +78,7 @@ type MPD struct {
 	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
 	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
 	ID                         *string  `xml:"id,attr"`
+	BaseURL                    *string  `xml:"BaseURL,omitempty"`
 	Period                     []Period `xml:"Period,omitempty"`
 }
 
@@ -98,6 +99,7 @@ type mpdMarshal struct {
 	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
 	Profiles                   string          `xml:"profiles,attr"`
 	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
+	BaseURL                    *string         `xml:"BaseURL,omitempty"`
 	Period                     []periodMarshal `xml:"Period,omitempty"`
 }
 
@@ -171,7 +173,6 @@ type AdaptationSet struct {
 	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
-	BaseURL                 *string          `xml:"BaseURL,omitempty"`
 }
 
 type adaptationSetMarshal struct {
@@ -185,7 +186,6 @@ type adaptationSetMarshal struct {
 	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
-	BaseURL                 *string                 `xml:"BaseURL,omitempty"`
 }
 
 // Representation represents XSD's RepresentationType.
@@ -279,6 +279,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		SCTE35:                     copyobj.String(mpd.SCTE35),
 		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
 		ID:                         copyobj.String(mpd.ID),
+		BaseURL:                    copyobj.String(mpd.BaseURL),
 		Period:                     modifyPeriod(mpd.Period),
 	}
 }
@@ -318,7 +319,6 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
 			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
-			BaseURL:                 copyobj.String(a.BaseURL),
 		}
 		asm = append(asm, adaptationSet)
 	}
