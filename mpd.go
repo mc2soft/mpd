@@ -121,7 +121,7 @@ func (m *MPD) Encode() ([]byte, error) {
 
 	// hacks for self-closing tags
 	res := new(bytes.Buffer)
-	res.WriteString(`<?xml version="1.0" encoding="utf-8"?>`)
+	res.WriteString(`<?xml version="1.0" encoding="UTF-8"?>`)
 	res.WriteByte('\n')
 	for {
 		s, err := x.ReadString('\n')
@@ -163,7 +163,8 @@ type periodMarshal struct {
 
 // AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
-	MimeType                string           `xml:"mimeType,attr"`
+	Role                    *Role            `xml:"Role,omitempty"`
+	MimeType                string           `xml:"mimeType,attr,omitempty"`
 	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
 	BitstreamSwitching      *bool            `xml:"bitstreamSwitching,attr"`
@@ -173,10 +174,19 @@ type AdaptationSet struct {
 	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
 	Representations         []Representation `xml:"Representation,omitempty"`
 	Codecs                  *string          `xml:"codecs,attr"`
+	ContentType             string           `xml:"contentType,attr,omitempty"`
+	ID                      *string          `xml:"id,attr"`
+	Width                   *string          `xml:"width,attr,omitempty"`
+	Height                  *string          `xml:"height,attr,omitempty"`
+	MaxWidth                *string          `xml:"maxWidth,attr,omitempty"`
+	MaxHeight               *string          `xml:"maxHeight,attr,omitempty"`
+	FrameRate               *string          `xml:"frameRate,attr,omitempty"`
+	Par                     *string          `xml:"par,attr,omitempty"`
 }
 
 type adaptationSetMarshal struct {
-	MimeType                string                  `xml:"mimeType,attr"`
+	Role                    *roleMarshal            `xml:"Role,omitempty"`
+	MimeType                string                  `xml:"mimeType,attr,omitempty"`
 	SegmentAlignment        ConditionalUint         `xml:"segmentAlignment,attr"`
 	StartWithSAP            *uint64                 `xml:"startWithSAP,attr"`
 	BitstreamSwitching      *bool                   `xml:"bitstreamSwitching,attr"`
@@ -186,35 +196,67 @@ type adaptationSetMarshal struct {
 	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
 	Representations         []representationMarshal `xml:"Representation,omitempty"`
 	Codecs                  *string                 `xml:"codecs,attr"`
+	ContentType             string                  `xml:"contentType,attr,omitempty"`
+	ID                      *string                 `xml:"id,attr"`
+	Width                   *string                 `xml:"width,attr,omitempty"`
+	Height                  *string                 `xml:"height,attr,omitempty"`
+	MaxWidth                *string                 `xml:"maxWidth,attr,omitempty"`
+	MaxHeight               *string                 `xml:"maxHeight,attr,omitempty"`
+	FrameRate               *string                 `xml:"frameRate,attr,omitempty"`
+	Par                     *string                 `xml:"par,attr,omitempty"`
+}
+
+type Role struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
+}
+
+type roleMarshal struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
 }
 
 // Representation represents XSD's RepresentationType.
 type Representation struct {
-	ID                 *string          `xml:"id,attr"`
-	Width              *uint64          `xml:"width,attr"`
-	Height             *uint64          `xml:"height,attr"`
-	SAR                *string          `xml:"sar,attr"`
-	FrameRate          *string          `xml:"frameRate,attr"`
-	Bandwidth          *uint64          `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string          `xml:"audioSamplingRate,attr"`
-	Codecs             *string          `xml:"codecs,attr"`
-	BaseURL            *string          `xml:"BaseURL,omitempty"`
-	ContentProtections []DRMDescriptor  `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate `xml:"SegmentTemplate,omitempty"`
+	ID                        *string                    `xml:"id,attr"`
+	Width                     *uint64                    `xml:"width,attr"`
+	Height                    *uint64                    `xml:"height,attr"`
+	SAR                       *string                    `xml:"sar,attr"`
+	FrameRate                 *string                    `xml:"frameRate,attr"`
+	Bandwidth                 *uint64                    `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string                    `xml:"audioSamplingRate,attr"`
+	Codecs                    *string                    `xml:"codecs,attr"`
+	BaseURL                   *string                    `xml:"BaseURL,omitempty"`
+	ContentProtections        []DRMDescriptor            `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate           `xml:"SegmentTemplate,omitempty"`
+	MimeType                  string                     `xml:"mimeType,attr,omitempty"`
+	AudioChannelConfiguration *AudioChannelConfiguration `xml:"AudioChannelConfiguration,omitempty"`
 }
 
 type representationMarshal struct {
-	ID                 *string                `xml:"id,attr"`
-	Width              *uint64                `xml:"width,attr"`
-	Height             *uint64                `xml:"height,attr"`
-	SAR                *string                `xml:"sar,attr"`
-	FrameRate          *string                `xml:"frameRate,attr"`
-	Bandwidth          *uint64                `xml:"bandwidth,attr"`
-	AudioSamplingRate  *string                `xml:"audioSamplingRate,attr"`
-	Codecs             *string                `xml:"codecs,attr"`
-	BaseURL            *string                `xml:"BaseURL,omitempty"`
-	ContentProtections []drmDescriptorMarshal `xml:"ContentProtection,omitempty"`
-	SegmentTemplate    *SegmentTemplate       `xml:"SegmentTemplate,omitempty"`
+	ID                        *string                           `xml:"id,attr"`
+	Width                     *uint64                           `xml:"width,attr"`
+	Height                    *uint64                           `xml:"height,attr"`
+	SAR                       *string                           `xml:"sar,attr"`
+	FrameRate                 *string                           `xml:"frameRate,attr"`
+	Bandwidth                 *uint64                           `xml:"bandwidth,attr"`
+	AudioSamplingRate         *string                           `xml:"audioSamplingRate,attr"`
+	Codecs                    *string                           `xml:"codecs,attr"`
+	BaseURL                   *string                           `xml:"BaseURL,omitempty"`
+	ContentProtections        []drmDescriptorMarshal            `xml:"ContentProtection,omitempty"`
+	SegmentTemplate           *SegmentTemplate                  `xml:"SegmentTemplate,omitempty"`
+	MimeType                  string                            `xml:"mimeType,attr,omitempty"`
+	AudioChannelConfiguration *audioChannelConfigurationMarshal `xml:"AudioChannelConfiguration,omitempty"`
+}
+
+type AudioChannelConfiguration struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
+}
+
+type audioChannelConfigurationMarshal struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
 }
 
 // Descriptor represents XSD's DescriptorType.
@@ -312,6 +354,8 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			BitstreamSwitching:      copyobj.Bool(a.BitstreamSwitching),
 			Codecs:                  copyobj.String(a.Codecs),
 			Lang:                    copyobj.String(a.Lang),
+			ID:                      copyobj.String(a.ID),
+			ContentType:             a.ContentType,
 			MimeType:                a.MimeType,
 			SegmentAlignment:        a.SegmentAlignment,
 			StartWithSAP:            copyobj.UInt64(a.StartWithSAP),
@@ -319,6 +363,13 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			SubsegmentStartsWithSAP: copyobj.UInt64(a.SubsegmentStartsWithSAP),
 			Representations:         modifyRepresentations(a.Representations),
 			ContentProtections:      modifyContentProtections(a.ContentProtections),
+			Role:                    modifyRole(a.Role),
+			Width:                   copyobj.String(a.Width),
+			Height:                  copyobj.String(a.Height),
+			MaxWidth:                copyobj.String(a.MaxWidth),
+			MaxHeight:               copyobj.String(a.MaxHeight),
+			Par:                     copyobj.String(a.Par),
+			FrameRate:               copyobj.String(a.FrameRate),
 		}
 		asm = append(asm, adaptationSet)
 	}
@@ -329,17 +380,19 @@ func modifyRepresentations(rs []Representation) []representationMarshal {
 	rsm := make([]representationMarshal, 0, len(rs))
 	for _, r := range rs {
 		representation := representationMarshal{
-			AudioSamplingRate:  copyobj.String(r.AudioSamplingRate),
-			Bandwidth:          copyobj.UInt64(r.Bandwidth),
-			Codecs:             copyobj.String(r.Codecs),
-			FrameRate:          copyobj.String(r.FrameRate),
-			Height:             copyobj.UInt64(r.Height),
-			ID:                 copyobj.String(r.ID),
-			Width:              copyobj.UInt64(r.Width),
-			SegmentTemplate:    copySegmentTemplate(r.SegmentTemplate),
-			SAR:                copyobj.String(r.SAR),
-			ContentProtections: modifyContentProtections(r.ContentProtections),
-			BaseURL:            copyobj.String(r.BaseURL),
+			AudioSamplingRate:         copyobj.String(r.AudioSamplingRate),
+			Bandwidth:                 copyobj.UInt64(r.Bandwidth),
+			Codecs:                    copyobj.String(r.Codecs),
+			FrameRate:                 copyobj.String(r.FrameRate),
+			Height:                    copyobj.UInt64(r.Height),
+			ID:                        copyobj.String(r.ID),
+			Width:                     copyobj.UInt64(r.Width),
+			SegmentTemplate:           copySegmentTemplate(r.SegmentTemplate),
+			SAR:                       copyobj.String(r.SAR),
+			ContentProtections:        modifyContentProtections(r.ContentProtections),
+			BaseURL:                   copyobj.String(r.BaseURL),
+			MimeType:                  r.MimeType,
+			AudioChannelConfiguration: modifyAudioChannelConfiguration(r.AudioChannelConfiguration),
 		}
 		rsm = append(rsm, representation)
 	}
@@ -395,5 +448,25 @@ func modifyPssh(p *Pssh) *psshMarshal {
 	return &psshMarshal{
 		Cenc:  copyobj.String(p.Cenc),
 		Value: copyobj.String(p.Value),
+	}
+}
+
+func modifyRole(r *Role) *roleMarshal {
+	if r == nil {
+		return nil
+	}
+	return &roleMarshal{
+		SchemeIdUri: copyobj.String(r.SchemeIdUri),
+		Value:       copyobj.String(r.Value),
+	}
+}
+
+func modifyAudioChannelConfiguration(a *AudioChannelConfiguration) *audioChannelConfigurationMarshal {
+	if a == nil {
+		return nil
+	}
+	return &audioChannelConfigurationMarshal{
+		SchemeIdUri: copyobj.String(a.SchemeIdUri),
+		Value:       copyobj.String(a.Value),
 	}
 }
