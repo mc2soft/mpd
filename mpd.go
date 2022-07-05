@@ -75,6 +75,7 @@ type MPD struct {
 	PublishTime                *string  `xml:"publishTime,attr"`
 	Profiles                   string   `xml:"profiles,attr"`
 	XSI                        *string  `xml:"xsi,attr,omitempty"`
+	Cenc                       *string  `xml:"cenc,attr,omitempty"`
 	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
 	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
 	ID                         *string  `xml:"id,attr"`
@@ -86,6 +87,7 @@ type MPD struct {
 type mpdMarshal struct {
 	XMLName                    xml.Name        `xml:"MPD"`
 	XSI                        *string         `xml:"xmlns:xsi,attr,omitempty"`
+	Cenc                       *string         `xml:"xmlns:cenc,attr,omitempty"`
 	XMLNS                      *string         `xml:"xmlns,attr"`
 	XSISchemaLocation          *string         `xml:"xsi:schemaLocation,attr"`
 	ID                         *string         `xml:"id,attr"`
@@ -320,6 +322,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		XSI:                        copyobj.String(mpd.XSI),
 		SCTE35:                     copyobj.String(mpd.SCTE35),
 		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
+		Cenc:                       copyobj.String(mpd.Cenc),
 		ID:                         copyobj.String(mpd.ID),
 		BaseURL:                    copyobj.String(mpd.BaseURL),
 		Period:                     modifyPeriod(mpd.Period),
