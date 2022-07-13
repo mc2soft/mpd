@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:dash:schema:mpd:2011" xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd" id="dash" type="dynamic" publishTime="2021-09-21T14:28:50Z" minimumUpdatePeriod="PT5.6S" availabilityStartTime="2021-09-17T04:42:54Z" minBufferTime="PT17S" suggestedPresentationDelay="PT17S" timeShiftBufferDepth="PT136S" profiles="urn:mpeg:dash:profile:isoff-live:2011">
   <BaseURL>https://video-1-2/</BaseURL>
   <Period start="PT0S" id="1631853774">
