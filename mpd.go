@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strconv"
 
-	copyobj "github.com/mc2soft/mpd/utils"
+	copyobj "github.com/RamanPndy/go-dash-mpd/utils"
 )
 
 // http://mpeg.chiariglione.org/standards/mpeg-dash
