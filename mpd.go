@@ -165,47 +165,49 @@ type periodMarshal struct {
 
 // AdaptationSet represents XSD's AdaptationSetType.
 type AdaptationSet struct {
-	Role                    *Role            `xml:"Role,omitempty"`
-	MimeType                string           `xml:"mimeType,attr,omitempty"`
-	SegmentAlignment        ConditionalUint  `xml:"segmentAlignment,attr"`
-	StartWithSAP            *uint64          `xml:"startWithSAP,attr"`
-	BitstreamSwitching      *bool            `xml:"bitstreamSwitching,attr"`
-	SubsegmentAlignment     ConditionalUint  `xml:"subsegmentAlignment,attr"`
-	SubsegmentStartsWithSAP *uint64          `xml:"subsegmentStartsWithSAP,attr"`
-	Lang                    *string          `xml:"lang,attr"`
-	ContentProtections      []DRMDescriptor  `xml:"ContentProtection,omitempty"`
-	Representations         []Representation `xml:"Representation,omitempty"`
-	Codecs                  *string          `xml:"codecs,attr"`
-	ContentType             string           `xml:"contentType,attr,omitempty"`
-	ID                      *string          `xml:"id,attr"`
-	Width                   *string          `xml:"width,attr,omitempty"`
-	Height                  *string          `xml:"height,attr,omitempty"`
-	MaxWidth                *string          `xml:"maxWidth,attr,omitempty"`
-	MaxHeight               *string          `xml:"maxHeight,attr,omitempty"`
-	FrameRate               *string          `xml:"frameRate,attr,omitempty"`
-	Par                     *string          `xml:"par,attr,omitempty"`
+	Role                    *Role                 `xml:"Role,omitempty"`
+	MimeType                string                `xml:"mimeType,attr,omitempty"`
+	SegmentAlignment        ConditionalUint       `xml:"segmentAlignment,attr"`
+	StartWithSAP            *uint64               `xml:"startWithSAP,attr"`
+	BitstreamSwitching      *bool                 `xml:"bitstreamSwitching,attr"`
+	SubsegmentAlignment     ConditionalUint       `xml:"subsegmentAlignment,attr"`
+	SubsegmentStartsWithSAP *uint64               `xml:"subsegmentStartsWithSAP,attr"`
+	Lang                    *string               `xml:"lang,attr"`
+	ContentProtections      []DRMDescriptor       `xml:"ContentProtection,omitempty"`
+	Representations         []Representation      `xml:"Representation,omitempty"`
+	Codecs                  *string               `xml:"codecs,attr"`
+	ContentType             string                `xml:"contentType,attr,omitempty"`
+	ID                      *string               `xml:"id,attr"`
+	Width                   *string               `xml:"width,attr,omitempty"`
+	Height                  *string               `xml:"height,attr,omitempty"`
+	MaxWidth                *string               `xml:"maxWidth,attr,omitempty"`
+	MaxHeight               *string               `xml:"maxHeight,attr,omitempty"`
+	FrameRate               *string               `xml:"frameRate,attr,omitempty"`
+	Par                     *string               `xml:"par,attr,omitempty"`
+	SupplementalProperty    *SupplementalProperty `xml:"SupplementalProperty,omitempty"`
 }
 
 type adaptationSetMarshal struct {
-	Role                    *roleMarshal            `xml:"Role,omitempty"`
-	MimeType                string                  `xml:"mimeType,attr,omitempty"`
-	SegmentAlignment        ConditionalUint         `xml:"segmentAlignment,attr"`
-	StartWithSAP            *uint64                 `xml:"startWithSAP,attr"`
-	BitstreamSwitching      *bool                   `xml:"bitstreamSwitching,attr"`
-	SubsegmentAlignment     ConditionalUint         `xml:"subsegmentAlignment,attr"`
-	SubsegmentStartsWithSAP *uint64                 `xml:"subsegmentStartsWithSAP,attr"`
-	Lang                    *string                 `xml:"lang,attr"`
-	ContentProtections      []drmDescriptorMarshal  `xml:"ContentProtection,omitempty"`
-	Representations         []representationMarshal `xml:"Representation,omitempty"`
-	Codecs                  *string                 `xml:"codecs,attr"`
-	ContentType             string                  `xml:"contentType,attr,omitempty"`
-	ID                      *string                 `xml:"id,attr"`
-	Width                   *string                 `xml:"width,attr,omitempty"`
-	Height                  *string                 `xml:"height,attr,omitempty"`
-	MaxWidth                *string                 `xml:"maxWidth,attr,omitempty"`
-	MaxHeight               *string                 `xml:"maxHeight,attr,omitempty"`
-	FrameRate               *string                 `xml:"frameRate,attr,omitempty"`
-	Par                     *string                 `xml:"par,attr,omitempty"`
+	Role                    *roleMarshal                 `xml:"Role,omitempty"`
+	MimeType                string                       `xml:"mimeType,attr,omitempty"`
+	SegmentAlignment        ConditionalUint              `xml:"segmentAlignment,attr"`
+	StartWithSAP            *uint64                      `xml:"startWithSAP,attr"`
+	BitstreamSwitching      *bool                        `xml:"bitstreamSwitching,attr"`
+	SubsegmentAlignment     ConditionalUint              `xml:"subsegmentAlignment,attr"`
+	SubsegmentStartsWithSAP *uint64                      `xml:"subsegmentStartsWithSAP,attr"`
+	Lang                    *string                      `xml:"lang,attr"`
+	ContentProtections      []drmDescriptorMarshal       `xml:"ContentProtection,omitempty"`
+	Representations         []representationMarshal      `xml:"Representation,omitempty"`
+	Codecs                  *string                      `xml:"codecs,attr"`
+	ContentType             string                       `xml:"contentType,attr,omitempty"`
+	ID                      *string                      `xml:"id,attr"`
+	Width                   *string                      `xml:"width,attr,omitempty"`
+	Height                  *string                      `xml:"height,attr,omitempty"`
+	MaxWidth                *string                      `xml:"maxWidth,attr,omitempty"`
+	MaxHeight               *string                      `xml:"maxHeight,attr,omitempty"`
+	FrameRate               *string                      `xml:"frameRate,attr,omitempty"`
+	Par                     *string                      `xml:"par,attr,omitempty"`
+	SupplementalProperty    *supplementalPropertyMarshal `xml:"SupplementalProperty,omitempty"`
 }
 
 type Role struct {
@@ -214,6 +216,16 @@ type Role struct {
 }
 
 type roleMarshal struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
+}
+
+type SupplementalProperty struct {
+	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
+	Value       *string `xml:"value,attr,omitempty"`
+}
+
+type supplementalPropertyMarshal struct {
 	SchemeIdUri *string `xml:"schemeIdUri,attr,omitempty"`
 	Value       *string `xml:"value,attr,omitempty"`
 }
@@ -373,6 +385,7 @@ func modifyAdaptationSets(as []*AdaptationSet) []*adaptationSetMarshal {
 			MaxHeight:               copyobj.String(a.MaxHeight),
 			Par:                     copyobj.String(a.Par),
 			FrameRate:               copyobj.String(a.FrameRate),
+			SupplementalProperty:    modifySupplementalProperty(a.SupplementalProperty),
 		}
 		asm = append(asm, adaptationSet)
 	}
@@ -461,6 +474,16 @@ func modifyRole(r *Role) *roleMarshal {
 	return &roleMarshal{
 		SchemeIdUri: copyobj.String(r.SchemeIdUri),
 		Value:       copyobj.String(r.Value),
+	}
+}
+
+func modifySupplementalProperty(s *SupplementalProperty) *supplementalPropertyMarshal {
+	if s == nil {
+		return nil
+	}
+	return &supplementalPropertyMarshal{
+		SchemeIdUri: copyobj.String(s.SchemeIdUri),
+		Value:       copyobj.String(s.Value),
 	}
 }
 
