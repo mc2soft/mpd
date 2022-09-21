@@ -1,4 +1,4 @@
-module github.com/mc2soft/mpd
+module github.com/RamanPndy/go-dash-mpd
 
 go 1.16
 
