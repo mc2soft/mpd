@@ -78,7 +78,7 @@ type MPD struct {
 	SCTE35                     *string  `xml:"scte35,attr,omitempty"`
 	XSISchemaLocation          *string  `xml:"schemaLocation,attr"`
 	ID                         *string  `xml:"id,attr"`
-	BaseURL                    *string  `xml:"BaseURL,omitempty"`
+	BaseURL                    []string `xml:"BaseURL,omitempty"`
 	Period                     []Period `xml:"Period,omitempty"`
 }
 
@@ -99,7 +99,7 @@ type mpdMarshal struct {
 	TimeShiftBufferDepth       *string         `xml:"timeShiftBufferDepth,attr"`
 	Profiles                   string          `xml:"profiles,attr"`
 	SCTE35                     *string         `xml:"xmlns:scte35,attr,omitempty"`
-	BaseURL                    *string         `xml:"BaseURL,omitempty"`
+	BaseURL                    []string        `xml:"BaseURL,omitempty"`
 	Period                     []periodMarshal `xml:"Period,omitempty"`
 }
 
@@ -279,7 +279,7 @@ func modifyMPD(mpd *MPD) *mpdMarshal {
 		SCTE35:                     copyobj.String(mpd.SCTE35),
 		XSISchemaLocation:          copyobj.String(mpd.XSISchemaLocation),
 		ID:                         copyobj.String(mpd.ID),
-		BaseURL:                    copyobj.String(mpd.BaseURL),
+		BaseURL:                    mpd.BaseURL,
 		Period:                     modifyPeriod(mpd.Period),
 	}
 }
